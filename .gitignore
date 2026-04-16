@@ -1,0 +1,4 @@
+node_modules/
+apps_script.gs
+estoque-app/proxy.js
+.env
