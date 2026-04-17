@@ -6,3 +6,4 @@ estoque-app/proxy.js
 .vercel
 .env*.local
 service-account-key.json
+service-account-key-min.json
