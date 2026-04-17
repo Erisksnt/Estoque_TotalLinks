@@ -1,6 +1,6 @@
 // estoque-app/js/inclusao.js
 
-import { categoriasLista, dadosEstoque, tecnicoAtual } from './state.js';
+import { categoriasLista, dadosEstoque, tecnicoAtual, addMovimentacaoRecente } from './state.js';
 import { mostrarTela } from './navigation.js';
 import { API_URL } from './config.js';
 import { CATEGORIAS_COM_PATRIMONIO } from './config.js';
@@ -293,11 +293,12 @@ async function salvarInclusao() {
 
   const qtdeValor = document.getElementById('qtdeInclusaoValor');
   const quantidade = qtdeValor ? parseInt(qtdeValor.textContent) : 1;
+  const itemNome = document.getElementById('itemInclusao').value.trim();
 
   const dados = {
     action: 'registrarInclusao',
     categoria: document.getElementById('categoriaInclusao').value,
-    item: document.getElementById('itemInclusao').value.trim(),
+    item: itemNome,
     quantidade: quantidade,
     patrimonio: patrimonios.join(', '),
     observacao: document.getElementById('obsInclusao').value.trim() || null,
@@ -317,6 +318,15 @@ async function salvarInclusao() {
     });
     const resultado = await response.json();
     if (resultado.success) {
+      // Adiciona a movimentação na lista de recentes
+      addMovimentacaoRecente({ 
+        tipo: 'inclusao',
+        item: itemNome, 
+        quantidade: quantidade, 
+        data: new Date().toLocaleString(), 
+        tecnico: tecnicoAtual 
+      });
+      
       alert('✅ Item incluído com sucesso!');
       limparFormulario();
       mostrarTela('mainScreen');
