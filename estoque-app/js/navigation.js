@@ -33,7 +33,7 @@ export function mostrarTelaPrincipal() {
 }
 
 export function mostrarTela(telaId) {
-  const telas = ['mainScreen', 'loginScreen', 'itemsScreen', 'withdrawScreen', 'searchScreen', 'recentesScreen', 'criticosScreen'];
+  const telas = ['mainScreen', 'loginScreen', 'itemsScreen', 'withdrawScreen', 'searchScreen', 'recentesScreen', 'criticosScreen', 'inclusaoScreen'];
   telas.forEach(tela => {
     const el = document.getElementById(tela);
     if (el) el.classList.remove('active');
