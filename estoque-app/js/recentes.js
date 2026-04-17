@@ -1,24 +1,31 @@
 // estoque-app/js/recentes.js
 
-import { retiradasRecentes } from './state.js';
+import { movimentacoesRecentes } from './state.js';
 
-// Carrega e exibe a lista de retiradas recentes na tela correspondente
+// Carrega e exibe a lista de movimentações recentes (retiradas e inclusões)
 export function carregarRecentes() {
   const container = document.getElementById('recentesList');
   if (!container) return;
   
-  if (retiradasRecentes.length === 0) {
-    container.innerHTML = '<div style="text-align:center;padding:40px;color:#718096;">Nenhuma retirada recente</div>';
+  if (movimentacoesRecentes.length === 0) {
+    container.innerHTML = '<div style="text-align:center;padding:40px;color:#718096;">Nenhuma movimentação recente</div>';
     return;
   }
   
-  container.innerHTML = retiradasRecentes.map(r => `
-    <div class="recente-item">
-      <div>
-        <strong>${r.item}</strong>
-        <div style="font-size:12px;color:#718096;">${r.quantidade} un • ${r.tecnico}</div>
+  container.innerHTML = movimentacoesRecentes.map(m => {
+    const tipoIcon = m.tipo === 'retirada' ? '-' : '+';
+    const tipoTexto = m.tipo === 'retirada' ? 'Retirada' : 'Inclusão';
+    
+    return `
+      <div class="recente-item">
+        <div>
+          <strong>${m.item}</strong>
+          <div style="font-size:12px;color:#718096;">
+            ${tipoIcon} ${tipoTexto} • ${m.quantidade} un • ${m.tecnico}
+          </div>
+        </div>
+        <div style="font-size:12px;color:#718096;">${m.data}</div>
       </div>
-      <div style="font-size:12px;color:#718096;">${r.data}</div>
-    </div>
-  `).join('');
+    `;
+  }).join('');
 }
