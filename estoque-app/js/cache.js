@@ -19,6 +19,7 @@ export async function carregarEstoque(forceRefresh = false) {
           carregarCategoriasRapidas();
           carregarListaCritica();
           atualizarStatusSync(true);
+          // Não há mais necessidade de atualizar datalist
           return true;
         }
       } catch (e) {
@@ -31,6 +32,7 @@ export async function carregarEstoque(forceRefresh = false) {
   const resultado = await apiGetEstoque();
   if (resultado.success) {
     setDadosEstoque(resultado.data.items);
+    // Não há mais necessidade de atualizar datalist
     localStorage.setItem(CACHE_KEY, JSON.stringify({
       data: resultado.data.items,
       timestamp: Date.now()
