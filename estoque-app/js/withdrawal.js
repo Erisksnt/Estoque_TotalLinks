@@ -1,6 +1,6 @@
 // estoque-app/js/withdrawal.js
 
-import { dadosEstoque, itemAtual, tecnicoAtual, setItemAtual, setTelaAnterior, addRetiradaRecente } from './state.js';
+import { dadosEstoque, itemAtual, tecnicoAtual, setItemAtual, setTelaAnterior, addMovimentacaoRecente } from './state.js';
 import { apiRegistrarRetirada } from './api.js';
 import { carregarEstoque } from './cache.js';
 import { mostrarTela, mostrarTelaPrincipal } from './navigation.js';
@@ -156,7 +156,8 @@ export function initRetirada() {
       });
       
       if (resultado.success) {
-        addRetiradaRecente({ 
+        addMovimentacaoRecente({ 
+          tipo: 'retirada',
           item: itemAtual[1], 
           quantidade: quantidade, 
           data: new Date().toLocaleString(), 
