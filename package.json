@@ -21,6 +21,7 @@
   "homepage": "https://github.com/Erisksnt/Estoque_CSV#readme",
   "dependencies": {
     "express": "^5.2.1",
+    "googleapis": "^171.4.0",
     "http-proxy-middleware": "^3.0.5"
   }
 }
