@@ -392,6 +392,36 @@
   }
 
   /* ============================================
+      FAB - Floating Action Button (Botão Incluir)
+     ============================================ */
+
+  .fab {
+    position: fixed;
+    bottom: 80px;
+    right: 20px;
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    background-color: #0066CC;
+    color: white;
+    border: none;
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    transition: background-color 0.2s, transform 0.1s;
+    z-index: 1000;
+  }
+  
+  .fab:hover {
+    background-color: #0052a3;
+  }
+  
+  .fab:active {
+    transform: scale(0.96);
+  }
+
+  /* ============================================
      SCREEN HEADER (voltar)
      ============================================ */
   .screen-header {
@@ -416,6 +446,43 @@
     font-size: 18px;
     font-weight: 600;
     color: #1A202C;
+  }
+
+/* ============================================
+   AUTOCOMPLETE CUSTOMIZADO (campo Item)
+   ============================================ */
+  .autocomplete-container {
+    position: relative;
+  }
+
+  .autocomplete-items {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background-color: white;
+    border: 1px solid #E2E8F0;
+    border-radius: 8px;
+    max-height: 200px;
+    overflow-y: auto;
+    z-index: 1000;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    display: none;
+  }
+
+  .autocomplete-items div {
+    padding: 10px;
+    cursor: pointer;
+    border-bottom: 1px solid #f0f0f0;
+  }
+
+  .autocomplete-items div:hover {
+    background-color: #f0f9ff;
+    color: #0066CC;
+  }
+
+  .autocomplete-items div.selected {
+    background-color: #e6f0ff;
   }
 
   /* ============================================
@@ -452,6 +519,10 @@
     font-size: 12px;
     color: #718096;
   }
+
+  .form-buttons {
+  margin-top: 30px;
+}
 
   /* ============================================
      WITHDRAW SCREEN
@@ -533,21 +604,24 @@
   }
 
   .btn-confirm {
-    width: 100%;
-    padding: 14px;
-    background: #0066CC;
+    background-color: #0066CC;
     color: white;
     border: none;
-    border-radius: 12px;
-    font-size: 15px;
-    font-weight: 500;
+    padding: 12px;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: 600;
     cursor: pointer;
-    margin-top: 16px;
-    transition: background 0.2s;
+    width: 100%;
+    transition: background-color 0.2s;
+  }
+
+  .btn-confirm:hover {
+    background-color: #0052a3;
   }
 
   .btn-confirm:active {
-    background: #004999;
+    transform: scale(0.98);
   }
 
   .add-patrimonio {
@@ -632,6 +706,23 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
+  }
+
+  /* ============================================
+     FORMULÁRIO DE SAÍDA
+     ============================================ */
+  .form-container {
+    padding: 20px;
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  /* Para telas muito grandes, */
+  @media (min-width: 1400px) {
+    .form-container {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
   }
 
   /* ============================================
