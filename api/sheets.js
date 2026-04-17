@@ -1,5 +1,7 @@
 // api/sheets.js
 const { google } = require('googleapis');
+const fs = require('fs');
+const path = require('path');
 
 // Carregar as credenciais da Conta de Serviço
 // Em produção, use variável de ambiente. Em desenvolvimento, use arquivo local.
@@ -9,11 +11,22 @@ async function getAuth() {
   if (auth) return auth;
   
   try {
-    // Para desenvolvimento local
-    const serviceAccount = require('../service-account-key.json');
+    let credentials;
+    
+    // Em produção (Vercel), usa variável de ambiente
+    if (process.env.GOOGLE_SERVICE_ACCOUNT_KEY) {
+      credentials = JSON.parse(process.env.GOOGLE_SERVICE_ACCOUNT_KEY);
+      console.log('✅ Usando credenciais da variável de ambiente');
+    } else {
+      // Desenvolvimento local - arquivo local
+      const keyPath = path.join(process.cwd(), 'service-account-key.json');
+      const keyContent = fs.readFileSync(keyPath, 'utf8');
+      credentials = JSON.parse(keyContent);
+      console.log('✅ Usando credenciais do arquivo local');
+    }
     
     auth = new google.auth.GoogleAuth({
-      credentials: serviceAccount,
+      credentials: credentials,
       scopes: ['https://www.googleapis.com/auth/spreadsheets']
     });
     
