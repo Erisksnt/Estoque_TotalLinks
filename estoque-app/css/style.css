@@ -427,12 +427,12 @@
   .screen-header {
     display: flex;
     align-items: center;
-    gap: 16px;
+    justify-content: space-between;
     padding: 16px 20px;
     background: white;
     border-bottom: 1px solid #E2E8F0;
   }
-
+  
   .back-btn {
     background: none;
     border: none;
@@ -441,13 +441,15 @@
     color: #0066CC;
     padding: 8px 0;
   }
-
+  
   .screen-header h2 {
     font-size: 18px;
     font-weight: 600;
     color: #1A202C;
+    margin: 0;
+    text-align: right;
   }
-
+  
 /* ============================================
    AUTOCOMPLETE CUSTOMIZADO (campo Item)
    ============================================ */
