@@ -100,6 +100,10 @@
           <div class="nav-label">Crítico</div>
         </div>
       </div>
+
+        <!-- Botão Incluir -->
+        <button id="fabIncluir" class="fab" aria-label="Incluir item">+</button>
+
     </div>
 
     <!-- Tela de Itens por Categoria -->
@@ -175,6 +179,52 @@
         <h2>Todos os críticos</h2>
       </div>
       <div id="criticosList" class="criticos-list"></div>
+    </div>
+    
+        <!-- Tela de Inclusão de Itens -->
+    <div id="inclusaoScreen" class="screen">
+      <div class="screen-header">
+        <button class="back-btn" id="backFromInclusao">← Voltar</button>
+        <h2>Inclusão</h2>
+      </div>
+
+      <div class="form-container">
+        <div class="form-group">
+          <label>Categoria</label>
+          <select id="categoriaInclusao" class="input" required>
+            <option value="">Selecione uma categoria</option>
+          </select>
+        </div>
+
+      <div class="form-group autocomplete-container">
+        <label>Item</label>
+        <input type="text" id="itemInclusao" class="input" placeholder="Digite ou selecione o item" autocomplete="off">
+        <div id="itemAutocompleteList" class="autocomplete-items"></div>
+      </div>
+
+      <div class="form-group">
+        <label>Quantidade</label>
+        <div class="quantity-control">
+          <button type="button" id="qtdeInclusaoMenos" class="qty-btn">-</button>
+          <span id="qtdeInclusaoValor" class="qty-value">1</span>
+          <button type="button" id="qtdeInclusaoMais" class="qty-btn">+</button>
+        </div>
+      </div>
+
+        <div class="form-group" id="patrimonioInclusaoGroup" style="display: none;">
+          <label>Patrimônios</label>
+          <div id="patrimoniosInclusaoList"></div>
+        </div>
+
+        <div class="form-group">
+          <label>Observação</label>
+          <textarea id="obsInclusao" class="obs-input" rows="2" placeholder="Motivo da inclusão, observações..."></textarea>
+        </div>
+
+        <div class="form-buttons">
+          <button id="salvarInclusao" class="btn-confirm">Confirmar inclusão</button>
+        </div>
+      </div>
     </div>
   </div>
 
