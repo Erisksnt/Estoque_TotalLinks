@@ -1,40 +1,61 @@
 // api/proxy.js
-export default async function handler(req, res) {
+const { getEstoque, registrarRetirada, registrarInclusao, getTecnicos } = require('./sheets.js');
+
+module.exports = async function handler(req, res) {
+  // Configurar CORS
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
-
+  
   if (req.method === 'OPTIONS') {
     return res.status(200).end();
   }
-
-  // A URL do Google Apps Script virá da variável de ambiente
-  const GS_URL = process.env.GOOGLE_APPS_SCRIPT_URL;
-  if (!GS_URL) {
-    return res.status(500).json({ error: 'URL do Apps Script não configurada' });
-  }
-
-  try {
-    // Constrói a URL com os mesmos parâmetros que o frontend enviaria
-    const targetUrl = new URL(GS_URL);
-    // Copia os query params da requisição original
-    Object.keys(req.query).forEach(key => {
-      targetUrl.searchParams.append(key, req.query[key]);
-    });
-
-    // Se for POST, pega o body
-    let fetchOptions = { method: req.method };
-    if (req.method === 'POST') {
-      fetchOptions.body = JSON.stringify(req.body);
-      fetchOptions.headers = { 'Content-Type': 'application/json' };
+  
+  // Processar GET
+  if (req.method === 'GET') {
+    const { action } = req.query;
+    
+    console.log(`📥 GET request: action=${action}`);
+    
+    try {
+      let result;
+      if (action === 'getEstoque') {
+        result = await getEstoque();
+      } else if (action === 'getTecnicos') {
+        result = await getTecnicos();
+      } else {
+        result = { success: false, error: 'Ação não reconhecida' };
+      }
+      
+      return res.status(200).json(result);
+    } catch (error) {
+      console.error('Erro no handler GET:', error);
+      return res.status(500).json({ success: false, error: error.message });
     }
-
-    const response = await fetch(targetUrl.toString(), fetchOptions);
-    const data = await response.text();
-
-    res.status(response.status).send(data);
-  } catch (error) {
-    console.error('Proxy error:', error);
-    res.status(500).json({ error: 'Erro ao comunicar com o Apps Script' });
   }
-}
+  
+  // Processar POST
+  if (req.method === 'POST') {
+    const data = req.body;
+    
+    console.log(`📥 POST request: action=${data.action}`);
+    
+    try {
+      let result;
+      if (data.action === 'registrarRetirada') {
+        result = await registrarRetirada(data);
+      } else if (data.action === 'registrarInclusao') {
+        result = await registrarInclusao(data);
+      } else {
+        result = { success: false, error: 'Ação não reconhecida' };
+      }
+      
+      return res.status(200).json(result);
+    } catch (error) {
+      console.error('Erro no handler POST:', error);
+      return res.status(500).json({ success: false, error: error.message });
+    }
+  }
+  
+  return res.status(405).json({ success: false, error: 'Método não permitido' });
+};
