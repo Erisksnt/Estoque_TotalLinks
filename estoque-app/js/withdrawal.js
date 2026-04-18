@@ -26,7 +26,7 @@ export function abrirRetirada(nomeItem) {
   const withdrawItemStock = document.getElementById('withdrawItemStock');
   
   if (withdrawItemName) withdrawItemName.textContent = item[1];
-  if (withdrawItemStock) withdrawItemStock.innerHTML = `Estoque atual: ${item[3]} ${item[2]} | Mínimo: ${item[4]} ${item[2]}`;
+  if (withdrawItemStock) withdrawItemStock.innerHTML = `Estoque atual: ${item[3]} ${item[2]}`;
   
   const qtdeValor = document.getElementById('qtdeValor');
   if (qtdeValor) qtdeValor.textContent = '1';
