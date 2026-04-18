@@ -8,6 +8,12 @@ export let tecnicoAtual = null;
 export let movimentacoesRecentes = [];
 export let telaAnterior = 'mainScreen';
 
+// Carrega o técnico logado do sessionStorage
+const savedTecnico = sessionStorage.getItem('tecnicoLogado');
+if (savedTecnico) {
+  tecnicoAtual = savedTecnico;
+}
+
 // Carrega as movimentações do localStorage ao iniciar
 try {
   const savedMovimentacoes = localStorage.getItem('movimentacoesRecentes');
@@ -50,6 +56,11 @@ export function setItemAtual(item) {
 
 export function setTecnicoAtual(tecnico) {
   tecnicoAtual = tecnico;
+  if (tecnico) {
+    sessionStorage.setItem('tecnicoLogado', tecnico);
+  } else {
+    sessionStorage.removeItem('tecnicoLogado');
+  }
 }
 
 export function setTelaAnterior(tela) {
