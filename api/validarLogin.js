@@ -31,7 +31,7 @@ export default async function handler(req, res) {
     }
 
     if (senha !== SENHA_CORRETA) {
-      return res.status(401).json({ sucesso: false, mensagem: 'Senha da equipe inválida' });
+      return res.status(401).json({ sucesso: false, mensagem: 'Senha ou PIN inválidos' });
     }
 
     // 2. Buscar técnicos usando o Node.js (não mais Apps Script)
@@ -45,7 +45,7 @@ export default async function handler(req, res) {
     // 3. Procurar técnico pelo PIN
     const tecnico = resultado.data.find(t => t.pin === pin);
     if (!tecnico) {
-      return res.status(401).json({ sucesso: false, mensagem: 'PIN inválido' });
+      return res.status(401).json({ sucesso: false, mensagem: 'Senha ou PIN inválidos' });
     }
 
     // 4. Login bem-sucedido
