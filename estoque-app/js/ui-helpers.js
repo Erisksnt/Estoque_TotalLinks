@@ -66,11 +66,33 @@ export function carregarCategoriasRapidas() {
 }
 
 export function carregarListaCritica() {
-  const criticos = dadosEstoque.filter(item => {
+  // 1. Filtrar itens críticos
+  let criticos = dadosEstoque.filter(item => {
     const atual = Number(item[3]) || 0;
     const minimo = Number(item[4]) || 0;
     return atual <= minimo;
-  }).slice(0, 5);
+  });
+  
+  // 2. Ordenar por criticidade (mais crítico primeiro) e depois por nome
+  criticos.sort((a, b) => {
+    const atualA = Number(a[3]) || 0;
+    const minimoA = Number(a[4]) || 0;
+    const atualB = Number(b[3]) || 0;
+    const minimoB = Number(b[4]) || 0;
+    
+    // Criticidade: estoque / minimo (quanto menor, mais crítico)
+    const criticidadeA = atualA / minimoA;
+    const criticidadeB = atualB / minimoB;
+    
+    if (criticidadeA !== criticidadeB) {
+      return criticidadeA - criticidadeB; // Menor primeiro (mais crítico)
+    }
+    // Se mesma criticidade, ordena por nome
+    return a[1].localeCompare(b[1]);
+  });
+  
+  // 3. Pegar os 5 primeiros
+  criticos = criticos.slice(0, 5);
   
   const container = document.getElementById('criticalList');
   if (!container) return;
@@ -84,13 +106,31 @@ export function carregarListaCritica() {
     const atual = Number(item[3]) || 0;
     const minimo = Number(item[4]) || 0;
     const isZerado = atual === 0;
+    const isNoLimite = atual === minimo && atual > 0;
+    const isAbaixo = atual < minimo && atual > 0;
+    
+    let statusTexto = '';
+    let statusClass = '';
+    
+    if (isZerado) {
+      statusTexto = 'ESGOTADO';
+      statusClass = 'danger';
+    } else if (isNoLimite) {
+      statusTexto = 'NO LIMITE';
+      statusClass = 'warning';
+    } else if (isAbaixo) {
+      const percentual = Math.round((1 - atual / minimo) * 100);
+      statusTexto = `${percentual}% crítico`;
+      statusClass = 'warning';
+    }
+    
     return `
-      <div class="critical-item ${isZerado ? '' : 'warning'}" onclick="abrirRetirada('${escapeHtml(item[1])}')">
+      <div class="critical-item ${statusClass}" onclick="abrirRetirada('${escapeHtml(item[1])}')">
         <div>
           <div class="critical-name">${item[1]}</div>
           <div class="critical-stock">Estoque: ${atual} / Mínimo: ${minimo} ${item[2]}</div>
         </div>
-        <div class="critical-value ${isZerado ? 'danger' : ''}">${isZerado ? 'ESGOTADO' : Math.round((atual/minimo)*100) + '%'}</div>
+        <div class="critical-value ${statusClass}">${statusTexto}</div>
       </div>
     `;
   }).join('');

@@ -42,10 +42,35 @@ export function renderizarItensPorCategoria(categoria) {
 
 // Mostra a tela com todos os itens críticos (estoque <= mínimo)
 export function verTodosCriticos() {
-  const criticos = dadosEstoque.filter(item => {
+  // 1. Filtrar itens críticos
+  let criticos = dadosEstoque.filter(item => {
     const atual = Number(item[3]) || 0;
     const minimo = Number(item[4]) || 0;
     return atual <= minimo;
+  });
+  
+  // 2. Ordenar por criticidade (mais crítico primeiro)
+  criticos.sort((a, b) => {
+    const atualA = Number(a[3]) || 0;
+    const minimoA = Number(a[4]) || 0;
+    const atualB = Number(b[3]) || 0;
+    const minimoB = Number(b[4]) || 0;
+    
+    // Para itens zerados (atual = 0), considerar como -1 (mais crítico)
+    const ratioA = atualA === 0 ? -1 : atualA / minimoA;
+    const ratioB = atualB === 0 ? -1 : atualB / minimoB;
+    
+    // Primeiro: zerados vêm primeiro
+    if (ratioA === -1 && ratioB !== -1) return -1;
+    if (ratioA !== -1 && ratioB === -1) return 1;
+    
+    // Depois: ordenar por ratio (menor primeiro = mais crítico)
+    if (ratioA !== ratioB) {
+      return ratioA - ratioB;
+    }
+    
+    // Por último: ordenar por nome
+    return a[1].localeCompare(b[1]);
   });
   
   const container = document.getElementById('criticosList');
@@ -57,14 +82,35 @@ export function verTodosCriticos() {
   }
   
   container.innerHTML = criticos.map(item => {
+    const atual = Number(item[3]) || 0;
+    const minimo = Number(item[4]) || 0;
+    const isZerado = atual === 0;
+    const isNoLimite = atual === minimo && atual > 0;
+    const isAbaixo = atual < minimo && atual > 0;
+    
+    let statusTexto = '';
+    let statusClass = '';
+    
+    if (isZerado) {
+      statusTexto = 'ESGOTADO';
+      statusClass = 'danger';
+    } else if (isNoLimite) {
+      statusTexto = 'ATENÇÃO';
+      statusClass = 'warning';
+    } else if (isAbaixo) {
+      const percentual = Math.round((1 - atual / minimo) * 100);
+      statusTexto = `CRÍTICO`;
+      statusClass = 'warning';
+    }
+    
     const nomeItemEscapado = item[1].replace(/'/g, "\\'");
     return `
-      <div class="critico-item" onclick="abrirRetirada('${nomeItemEscapado}')">
+      <div class="critical-item ${statusClass}" onclick="abrirRetirada('${nomeItemEscapado}')">
         <div>
-          <strong>${item[1]}</strong>
-          <div style="font-size:12px;color:#718096;">Estoque: ${item[3]} / Mínimo: ${item[4]} ${item[2]}</div>
+          <div class="critical-name">${item[1]}</div>
+          <div class="critical-stock">Estoque: ${atual} / Mínimo: ${minimo} ${item[2]}</div>
         </div>
-        <div>→</div>
+        <div class="critical-value ${statusClass}">${statusTexto}</div>
       </div>
     `;
   }).join('');
