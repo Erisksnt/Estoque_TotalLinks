@@ -254,6 +254,7 @@
   /* ============================================
      CRITICAL LIST
      ============================================ */
+
   .critical-list {
     padding: 0 20px;
   }
@@ -272,8 +273,18 @@
     border-left-width: 3px;
   }
 
+  /* Estilo para itens em alerta (abaixo do mínimo ou no limite) */
   .critical-item.warning {
-    border-left-color: #FF6B35;
+    background: #FFF3CD;
+    border-left-color: #FFC107;
+    border-color: #FFE69C;
+  }
+
+  /* Estilo para itens esgotados */
+  .critical-item.danger {
+    background: #F8D7DA;
+    border-left-color: #DC3545;
+    border-color: #F5C6CB;
   }
 
   .critical-name {
@@ -292,10 +303,16 @@
     font-weight: 500;
   }
 
+  /* Texto para itens esgotados */
   .critical-value.danger {
     color: #DC3545;
   }
 
+  /* Texto para itens em alerta (abaixo do mínimo ou no limite) */
+  .critical-value.warning {
+    color: #856404;
+  }
+  
   /* ============================================
      SYNC CARD
      ============================================ */
@@ -359,38 +376,63 @@
     background: white;
     display: flex;
     justify-content: space-around;
-    padding: 10px 20px 20px;
+    padding: 12px 20px 20px;
     border-top: 1px solid #E2E8F0;
+    box-shadow: 0 -2px 10px rgba(0,0,0,0.05);
   }
-
+  
   .nav-item {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 4px;
+    gap: 6px;
     cursor: pointer;
-    opacity: 0.5;
+    opacity: 0.6;
     transition: opacity 0.2s;
+    padding: 8px 12px;
+    border-radius: 12px;
   }
-
+  
   .nav-item.active {
     opacity: 1;
+    background: #F0F9FF;
   }
-
+  
   .nav-icon {
-    font-size: 20px;
+    font-size: 22px;
     font-weight: 500;
   }
-
+  
   .nav-label {
-    font-size: 11px;
+    font-size: 12px;
+    font-weight: 500;
     color: #4A5568;
   }
-
+  
   .nav-item.active .nav-label {
     color: #0066CC;
+    font-weight: 600;
   }
-
+  
+  /* Desktop: aumentar ainda mais */
+  @media (min-width: 768px) {
+    .bottom-nav {
+      padding: 16px 20px 20px;
+    }
+    
+    .nav-icon {
+      font-size: 24px;
+    }
+    
+    .nav-label {
+      font-size: 13px;
+    }
+    
+    .nav-item {
+      padding: 8px 20px;
+    }
+  }
+  
   /* ============================================
       FAB - Floating Action Button (Botão Incluir)
      ============================================ */
@@ -765,3 +807,25 @@
     background: #004999;
   }
 
+  /* Estado desabilitado do botão */
+  .btn-primary:disabled {
+    background-color: #004999;
+    cursor: not-allowed;
+    opacity: 0.7;
+  }
+
+  /* Esconder bottom navigation na tela de login */
+  #loginScreen.active + .bottom-nav,
+  #loginScreen.active ~ .bottom-nav {
+    display: none;
+  }
+
+  /* Esconde todas as telas por padrão */
+.screen {
+  display: none;
+}
+
+/* Mostra apenas a tela que tem a classe active */
+.screen.active {
+  display: block;
+}

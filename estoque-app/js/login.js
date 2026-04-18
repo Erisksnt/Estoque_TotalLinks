@@ -11,6 +11,11 @@ export function initLogin() {
       const senha = document.getElementById('senhaEquipe').value;
       const pin = document.getElementById('pinTecnico').value;
       const errorDiv = document.getElementById('loginError');
+      
+      // Desabilita o botão e muda o texto
+      const textoOriginal = btnLogin.textContent;
+      btnLogin.textContent = 'Processando...';
+      btnLogin.disabled = true;
 
       try {
         const response = await fetch('/api/validarLogin', {
@@ -28,10 +33,16 @@ export function initLogin() {
           mostrarTelaPrincipal();
         } else {
           if (errorDiv) errorDiv.textContent = data.mensagem || 'Senha ou PIN inválidos';
+          // Restaura o botão apenas em caso de erro (login falhou)
+          btnLogin.textContent = textoOriginal;
+          btnLogin.disabled = false;
         }
       } catch (error) {
         console.error('Erro ao validar login:', error);
         if (errorDiv) errorDiv.textContent = 'Erro de conexão. Tente novamente.';
+        // Restaura o botão em caso de erro de conexão
+        btnLogin.textContent = textoOriginal;
+        btnLogin.disabled = false;
       }
     });
   }
@@ -40,6 +51,23 @@ export function initLogin() {
   if (btnLogout) {
     btnLogout.addEventListener('click', () => {
       setTecnicoAtual(null);
+      
+      // Restaura o botão de login
+      const btnLogin = document.getElementById('btnLogin');
+      if (btnLogin) {
+        btnLogin.textContent = 'Acessar';
+        btnLogin.disabled = false;
+      }
+      
+      // Limpa os campos de senha e PIN
+      const senhaInput = document.getElementById('senhaEquipe');
+      const pinInput = document.getElementById('pinTecnico');
+      const errorDiv = document.getElementById('loginError');
+      
+      if (senhaInput) senhaInput.value = '';
+      if (pinInput) pinInput.value = '';
+      if (errorDiv) errorDiv.textContent = '';
+      
       mostrarTela('loginScreen');
     });
   }
