@@ -44,8 +44,8 @@ async function getSheet() {
   return sheets;
 }
 
-// ID da planilha (use variável de ambiente depois)
-const SPREADSHEET_ID = '1FulzV2vHEAVCrmSg2jr5ozzXkqlI2cBhD0vqk4McjHY';
+// ID da planilha vindo de variável de ambiente
+const SPREADSHEET_ID = process.env.GOOGLE_SHEETS_ID;
 
 // Buscar todos os dados do estoque (planilha CVS)
 async function getEstoque() {
@@ -99,7 +99,7 @@ async function registrarRetirada(data) {
     
     for (let i = 1; i < rows.length; i++) {
       if (rows[i][1] === itemNome) {
-        linhaItem = i + 1; // Linha no Google Sheets (1-indexed)
+        linhaItem = i + 1;
         estoqueAtual = Number(rows[i][3]) || 0;
         unidade = rows[i][2] || 'un';
         categoria = rows[i][0] || '';
@@ -249,7 +249,7 @@ async function registrarInclusao(data) {
   }
 }
 
-// Buscar técnicos - SEM FALLBACK, apenas retorna erro
+// Buscar técnicos - com perfil
 async function getTecnicos() {
   try {
     const sheets = await getSheet();
@@ -269,11 +269,23 @@ async function getTecnicos() {
     
     const tecnicos = rows.slice(1)
       .filter(row => row[2] !== 'NÃO')
-      .map(row => ({
-        pin: String(row[0]).trim(),
-        nome: row[1],
-        ativo: row[2] === 'SIM'
-      }));
+      .map(row => {
+        let perfil = 'tecnico'; // padrão
+        const perfilRaw = row[3] ? String(row[3]).trim().toLowerCase() : '';
+        
+        if (perfilRaw === 'adm' || perfilRaw === 'gerente' || perfilRaw === 'admin') {
+          perfil = 'gerente';
+        } else {
+          perfil = 'tecnico';
+        }
+        
+        return {
+          pin: String(row[0]).trim(),
+          nome: row[1],
+          ativo: row[2] === 'SIM',
+          perfil: perfil
+        };
+      });
     
     if (tecnicos.length === 0) {
       return { 

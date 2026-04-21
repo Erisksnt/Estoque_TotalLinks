@@ -18,44 +18,44 @@ export default async function handler(req, res) {
   try {
     const { senha, pin } = req.body;
 
-    // Validação básica de entrada
     if (!senha || !pin) {
       return res.status(400).json({ sucesso: false, mensagem: 'Senha e PIN são obrigatórios' });
     }
 
-    // 1. Verificar senha da equipe
     const SENHA_CORRETA = process.env.SENHA_EQUIPE;
     if (!SENHA_CORRETA) {
-      console.error('SENHA_EQUIPE não configurada no ambiente');
-      return res.status(500).json({ sucesso: false, mensagem: 'Erro interno: configuração ausente' });
+      console.error('SENHA_EQUIPE não configurada');
+      return res.status(500).json({ sucesso: false, mensagem: 'Erro interno de configuração' });
     }
 
+    // Verifica senha da equipe
     if (senha !== SENHA_CORRETA) {
-      return res.status(401).json({ sucesso: false, mensagem: 'Senha ou PIN inválidos' });
+      return res.status(401).json({ sucesso: false, mensagem: 'Senha ou PIN incorreto' });
     }
 
-    // 2. Buscar técnicos usando o Node.js (não mais Apps Script)
+    // Buscar técnicos via Node.js
     const resultado = await getTecnicos();
     
     if (!resultado.success) {
       console.error('Erro ao buscar técnicos:', resultado.error);
-      return res.status(500).json({ sucesso: false, mensagem: 'Erro ao validar técnicos' });
+      return res.status(500).json({ sucesso: false, mensagem: 'Erro ao validar credenciais' });
     }
 
-    // 3. Procurar técnico pelo PIN
+    // Verifica PIN do técnico
     const tecnico = resultado.data.find(t => t.pin === pin);
     if (!tecnico) {
-      return res.status(401).json({ sucesso: false, mensagem: 'Senha ou PIN inválidos' });
+      return res.status(401).json({ sucesso: false, mensagem: 'Senha ou PIN incorreto' });
     }
 
-    // 4. Login bem-sucedido
+    // Login bem-sucedido - retorna nome e perfil
     return res.status(200).json({
       sucesso: true,
-      tecnicoNome: tecnico.nome
+      tecnicoNome: tecnico.nome,
+      perfil: tecnico.perfil || 'tecnico'
     });
 
   } catch (error) {
-    console.error('Erro não tratado em validarLogin:', error);
+    console.error('Erro em validarLogin:', error);
     return res.status(500).json({ sucesso: false, mensagem: 'Erro interno no servidor' });
   }
 }
