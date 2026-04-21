@@ -876,3 +876,47 @@ body.tecnico .search-container {
     margin-bottom: 10px;
   }
 }
+
+/* ============================================
+   LOGOTIPO NO HEADER
+   ============================================ */
+.logo-header {
+  height: 80px;
+  width: auto;
+  max-width: 250px;
+  object-fit: contain;
+}
+
+.greeting {
+  font-size: 14px;
+  color: #4A5568;
+  margin: 0;
+  margin-left: 20px;
+  line-height: 1.2; /* evita altura extra */
+}
+
+.logo-login {
+  display: block;      /* permite centralizar com margin auto */
+  margin: 0 auto; 
+  height: 120px;
+  width: auto;
+  max-width: 250px;
+  object-fit: contain;
+  margin-bottom: 0px; /* espaço abaixo do logo */
+}
+
+.subtitle {
+  font-size: 16px;
+  color: #4A5568;
+  margin-top: 0;
+  margin-bottom: 00px;
+  text-align: center;
+}
+
+/* Ajuste para mobile */
+@media (max-width: 600px) {
+  .logo-header {
+    height: 60px;
+  }
+  
+}
