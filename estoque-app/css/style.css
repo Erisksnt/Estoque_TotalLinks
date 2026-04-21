@@ -829,3 +829,50 @@
 .screen.active {
   display: block;
 }
+
+/* ============================================
+   PERFIL TÉCNICO vs GERENTE
+   ============================================ */
+
+/* Transições suaves para elementos que aparecem/desaparecem */
+.metrics-grid,
+#criticalList,
+.section-header .section-link,
+#totalCategorias,
+#totalCriticos {
+  transition: opacity 0.3s ease, transform 0.2s ease;
+}
+
+/* Estilo para corpo quando em modo técnico (opcional) */
+body.tecnico .metrics-grid,
+body.tecnico #criticalList,
+body.tecnico .section-header .section-link {
+  display: none !important;
+}
+
+/* Garantir que o bottom navigation fique sempre visível */
+.bottom-nav {
+  z-index: 100;
+}
+
+/* Ajuste para o card de sincronização em modo técnico */
+body.tecnico .sync-card {
+  margin-top: 20px;
+}
+
+/* Ajuste para o FAB (botão de inclusão) - sempre visível */
+.fab {
+  z-index: 99;
+}
+
+/* Espaçamento extra para telas sem os cards de métricas */
+body.tecnico .search-container {
+  margin-top: 0;
+}
+
+/* Opcional: reduzir padding superior quando não há métricas */
+@media (max-width: 600px) {
+  body.tecnico .header {
+    margin-bottom: 10px;
+  }
+}
