@@ -5,6 +5,30 @@ import { carregarRecentes } from './recentes.js';
 import { verTodosCriticos } from './categories.js';
 import { carregarMetricas, carregarCategoriasRapidas, carregarListaCritica } from './ui-helpers.js';
 
+// Atualiza o ícone ativo do bottom navigation
+function atualizarBottomNavActive(telaId) {
+  // Remove active de todos os itens
+  document.querySelectorAll('.nav-item').forEach(nav => {
+    nav.classList.remove('active');
+  });
+  
+  // Mapeamento de telas para botões
+  const mapa = {
+    'mainScreen': 'home',
+    'searchScreen': 'search',
+    'recentesScreen': 'recentes',
+    'criticosScreen': 'criticos'
+  };
+  
+  const navTarget = mapa[telaId];
+  if (navTarget) {
+    const botao = document.querySelector(`.nav-item[data-nav="${navTarget}"]`);
+    if (botao) {
+      botao.classList.add('active');
+    }
+  }
+}
+
 // Função para adaptar a interface conforme o perfil
 function aplicarAdaptacaoPorPerfil() {
   const isGerente = perfilAtual === 'adm' || perfilAtual === 'gerente';
@@ -75,9 +99,8 @@ export function mostrarTelaPrincipal() {
   if (criticosScreen) criticosScreen.classList.remove('active');
   if (inclusaoScreen) inclusaoScreen.classList.remove('active');
   
-  document.querySelectorAll('.nav-item').forEach(nav => nav.classList.remove('active'));
-  const homeNav = document.querySelector('.nav-item[data-nav="home"]');
-  if (homeNav) homeNav.classList.add('active');
+  // Atualiza o active do bottom navigation
+  atualizarBottomNavActive('mainScreen');
   
   // FORÇA A REMOÇÃO DO ESTILO INLINE DO BOTTOM NAVIGATION
   const bottomNav = document.querySelector('.bottom-nav');
@@ -103,6 +126,9 @@ export function mostrarTela(telaId) {
   });
   const telaAtiva = document.getElementById(telaId);
   if (telaAtiva) telaAtiva.classList.add('active');
+  
+  // Atualiza o active do bottom navigation
+  atualizarBottomNavActive(telaId);
   
   // Mostra ou esconde o bottom navigation
   const bottomNav = document.querySelector('.bottom-nav');
@@ -182,9 +208,8 @@ export function initNavigation() {
         carregarRecentes();
         mostrarTela('recentesScreen');
       } else if (tela === 'criticos') {
-        // CORREÇÃO: permite acesso para ADM e Gerente
         if (isGerente) {
-          verTodosCriticos();
+          verTodosCriticos('criticosScreen');
         }
       }
     });
