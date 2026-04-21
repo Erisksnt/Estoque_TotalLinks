@@ -6,12 +6,16 @@ export let categoriaAtual = null;
 export let itemAtual = null;
 export let tecnicoAtual = null;
 export let movimentacoesRecentes = [];
+export let perfilAtual = null;
 export let telaAnterior = 'mainScreen';
 
-// Carrega o técnico logado do sessionStorage
+// Carrega o técnico logado e perfil do sessionStorage
 const savedTecnico = sessionStorage.getItem('tecnicoLogado');
+const savedPerfil = sessionStorage.getItem('perfilLogado');
+
 if (savedTecnico) {
   tecnicoAtual = savedTecnico;
+  perfilAtual = savedPerfil || 'tecnico'; // padrão é técnico
 }
 
 // Carrega as movimentações do localStorage ao iniciar
@@ -54,12 +58,15 @@ export function setItemAtual(item) {
   itemAtual = item;
 }
 
-export function setTecnicoAtual(tecnico) {
+export function setTecnicoAtual(tecnico, perfil = 'tecnico') {
   tecnicoAtual = tecnico;
+  perfilAtual = perfil;
   if (tecnico) {
     sessionStorage.setItem('tecnicoLogado', tecnico);
+    sessionStorage.setItem('perfilLogado', perfil);
   } else {
     sessionStorage.removeItem('tecnicoLogado');
+    sessionStorage.removeItem('perfilLogado');
   }
 }
 
