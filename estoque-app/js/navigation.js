@@ -72,12 +72,56 @@ function aplicarAdaptacaoPorPerfil() {
   // Ajusta a aba Crítico no bottom navigation conforme perfil
   const navCritico = document.querySelector('.nav-item[data-nav="criticos"]');
   if (navCritico) {
-    if (isGerente) {
-      navCritico.style.display = 'flex';
-    } else {
-      navCritico.style.display = 'none';
-    }
+    navCritico.style.display = isGerente ? 'flex' : 'none';
   }
+}
+
+// Função pública para atualizar toda a navegação (visibilidade e eventos)
+export function atualizarNavegacao() {
+  const navItems = document.querySelectorAll('.nav-item');
+  const isGerente = perfilAtual === 'adm' || perfilAtual === 'gerente';
+  
+  navItems.forEach(nav => {
+    const tela = nav.dataset.nav;
+    
+    // Atualiza visibilidade
+    if (tela === 'criticos') {
+      nav.style.display = isGerente ? 'flex' : 'none';
+    } else {
+      nav.style.display = 'flex';
+    }
+    
+    // Remove eventos antigos clonando o elemento
+    const newNav = nav.cloneNode(true);
+    nav.parentNode.replaceChild(newNav, nav);
+    
+    // Adiciona evento novamente
+    newNav.addEventListener('click', () => {
+      const navTela = newNav.dataset.nav;
+      if (navTela === 'home') {
+        mostrarTelaPrincipal();
+      } else if (navTela === 'search') {
+        mostrarTela('searchScreen');
+      } else if (navTela === 'recentes') {
+        carregarRecentes();
+        mostrarTela('recentesScreen');
+      } else if (navTela === 'criticos') {
+        if (perfilAtual === 'adm' || perfilAtual === 'gerente') {
+          verTodosCriticos();
+        }
+      }
+    });
+  });
+  
+  // Força a exibição do bottom nav (caso esteja oculto)
+  const bottomNav = document.querySelector('.bottom-nav');
+  if (bottomNav && perfilAtual !== null) {
+    bottomNav.style.display = 'flex';
+    bottomNav.style.visibility = 'visible';
+  }
+  
+  // Reaplica adaptação da interface
+  aplicarAdaptacaoPorPerfil();
 }
 
 export function mostrarTelaPrincipal() {
@@ -173,58 +217,9 @@ export function voltarDaRetirada() {
 }
 
 export function initNavigation() {
-  // Ajusta a visibilidade das abas conforme o perfil ANTES de configurar os eventos
-  const navItems = document.querySelectorAll('.nav-item');
-  const isGerente = perfilAtual === 'adm' || perfilAtual === 'gerente';
+  // Configura a navegação inicial (visibilidade e eventos)
+  atualizarNavegacao();
   
-  navItems.forEach(nav => {
-    const tela = nav.dataset.nav;
-    
-    if (tela === 'criticos') {
-      // Só mostra a aba Crítico para ADM/Gerente
-      if (isGerente) {
-        nav.style.display = 'flex';
-      } else {
-        nav.style.display = 'none';
-      }
-    } else {
-      // Todas as outras abas (home, search, recentes) ficam visíveis para ambos
-      nav.style.display = 'flex';
-    }
-  });
-
-  // Navegação inferior - adiciona eventos
-  navItems.forEach(nav => {
-    // Pula a configuração do evento se a aba estiver escondida
-    if (nav.style.display === 'none') return;
-    
-    nav.addEventListener('click', () => {
-      const tela = nav.dataset.nav;
-      if (tela === 'home') {
-        mostrarTelaPrincipal();
-      } else if (tela === 'search') {
-        mostrarTela('searchScreen');
-      } else if (tela === 'recentes') {
-        carregarRecentes();
-        mostrarTela('recentesScreen');
-      } else if (tela === 'criticos') {
-        if (isGerente) {
-          verTodosCriticos('criticosScreen');
-        }
-      }
-    });
-  });
-
-  // FORÇA A REMOÇÃO DO ESTILO INLINE DO BOTTOM NAVIGATION
-  const bottomNav = document.querySelector('.bottom-nav');
-  if (bottomNav && perfilAtual !== null) {
-    bottomNav.style.display = 'flex';
-    bottomNav.style.visibility = 'visible';
-  }
-
-  // Aplica adaptação inicial
-  aplicarAdaptacaoPorPerfil();
-
   // Ajusta o botão voltar na tela de retirada (onclick)
   const backBtn = document.querySelector('#withdrawScreen .back-btn');
   if (backBtn) {
