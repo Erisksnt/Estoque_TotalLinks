@@ -26,7 +26,9 @@ export function initLogin() {
         const data = await response.json();
 
         if (data.sucesso) {
-          setTecnicoAtual(data.tecnicoNome);
+          // CORREÇÃO: passa também o perfil
+          setTecnicoAtual(data.tecnicoNome, data.perfil);
+          
           const nomeSpan = document.getElementById('tecnicoNome');
           if (nomeSpan) nomeSpan.textContent = data.tecnicoNome;
           await carregarEstoque();
