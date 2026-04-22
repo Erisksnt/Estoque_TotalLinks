@@ -324,7 +324,9 @@ async function salvarInclusao() {
         item: itemNome, 
         quantidade: quantidade, 
         data: new Date().toLocaleString(), 
-        tecnico: tecnicoAtual 
+        tecnico: tecnicoAtual,
+        patrimonios: patrimonios,
+        observacao: dados.observacao
       });
       
       alert('✅ Item incluído com sucesso!');

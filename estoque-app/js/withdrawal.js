@@ -161,7 +161,9 @@ export function initRetirada() {
           item: itemAtual[1], 
           quantidade: quantidade, 
           data: new Date().toLocaleString(), 
-          tecnico: tecnicoAtual 
+          tecnico: tecnicoAtual,
+          patrimonios: patrimonios,
+          observacao: obsValue
         });
         alert(`✅ Retirada registrada!\nItem: ${itemAtual[1]}\nQuantidade: ${quantidade}`);
         await carregarEstoque(true);
