@@ -117,11 +117,11 @@ export function carregarListaCritica() {
       statusClass = 'danger';
     } else if (isNoLimite) {
       statusTexto = 'NO LIMITE';
-      statusClass = 'warning';
+      statusClass = 'warning-no-limite';
     } else if (isAbaixo) {
       const percentual = Math.round((1 - atual / minimo) * 100);
       statusTexto = `${percentual}% crítico`;
-      statusClass = 'warning';
+      statusClass = 'warning-critico';
     }
     
     return `

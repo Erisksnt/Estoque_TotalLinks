@@ -20,7 +20,7 @@
     background-size: contain;
     position: relative;
   }
-
+  
   /* Overlay escuro para melhorar contraste do texto */
   #loginScreen::before {
     content: '';
@@ -29,21 +29,20 @@
     left: 0;
     width: 100%;
     height: 100%;
-    background: rgba(0, 0, 0, 0.5); /* ← ADICIONE ESTA LINHA */
+    background: rgba(0, 0, 0, 0.5);
     z-index: 1;
   }
-
+  
   .login-container {
     position: relative;
-    z-index: 2; /* garante que o container fique acima do overlay */
+    z-index: 2;
     min-height: 100vh;
     display: flex;
     align-items: center;
     justify-content: center;
-    /* background: #F8FAFC; → REMOVA OU COMENTE ESTA LINHA */
     padding: 20px;
   }
-
+  
   .login-card {
     background: white;
     border-radius: 16px;
@@ -53,21 +52,21 @@
     box-shadow: 0 4px 12px rgba(0,0,0,0.05);
     border: 1px solid #E2E8F0;
   }
-
+  
   .login-card h1 {
     font-size: 24px;
     font-weight: 600;
-    color: #0066CC;
+    color: #0f4c81;
     margin-bottom: 8px;
     letter-spacing: -0.3px;
   }
-
+  
   .login-card .subtitle {
     color: #718096;
     font-size: 14px;
     margin-bottom: 32px;
   }
-
+  
   /* ============================================
      TELAS
      ============================================ */
@@ -166,7 +165,7 @@
   .metric-value {
     font-size: 28px;
     font-weight: 700;
-    color: #0066CC;
+    color: #0f4c81;
     margin-bottom: 4px;
   }
 
@@ -195,7 +194,7 @@
 
   .search-input:focus {
     outline: none;
-    border-color: #0066CC;
+    border-color: #0f4c81;
     box-shadow: 0 0 0 2px rgba(0,102,204,0.1);
   }
 
@@ -220,7 +219,7 @@
 
   .section-link {
     font-size: 13px;
-    color: #0066CC;
+    color: #0f4c81;
     cursor: pointer;
   }
 
@@ -273,7 +272,7 @@
 
   /* ============================================
      CRITICAL LIST
-     ============================================ */
+    ============================================ */
 
   .critical-list {
     padding: 0 20px;
@@ -293,18 +292,37 @@
     border-left-width: 3px;
   }
 
-  /* Estilo para itens em alerta (abaixo do mínimo ou no limite) */
-  .critical-item.warning {
-    background: #FFF3CD;
-    border-left-color: #FFC107;
-    border-color: #FFE69C;
-  }
-
-  /* Estilo para itens esgotados */
+  /* ESGOTADO - Vermelho */
   .critical-item.danger {
     background: #F8D7DA;
     border-left-color: #DC3545;
-    border-color: #F5C6CB;
+    border-color: #DC3545;
+  }
+
+  .critical-value.danger {
+    color: #DC3545;
+  }
+
+  /* CRÍTICO (abaixo do mínimo) - Laranja */
+  .critical-item.warning-critico {
+    background: #FFE0B2;
+    border-left-color: #E65100;
+    border-color: #BF360C;
+  }
+
+  .critical-value.warning-critico {
+    color: #E65100;
+  }
+
+  /* NO LIMITE (estoque = mínimo) - Amarelo */
+  .critical-item.warning-no-limite {
+    background: #FFF9C4;
+    border-left-color: #FACC15;
+    border-color: #FACC15;
+  }
+
+  .critical-value.warning-no-limite {
+    color: #FACC15;
   }
 
   .critical-name {
@@ -321,16 +339,6 @@
   .critical-value {
     font-size: 13px;
     font-weight: 500;
-  }
-
-  /* Texto para itens esgotados */
-  .critical-value.danger {
-    color: #DC3545;
-  }
-
-  /* Texto para itens em alerta (abaixo do mínimo ou no limite) */
-  .critical-value.warning {
-    color: #856404;
   }
   
   /* ============================================
@@ -430,7 +438,7 @@
   }
   
   .nav-item.active .nav-label {
-    color: #0066CC;
+    color: #0f4c81;
     font-weight: 600;
   }
   
@@ -464,7 +472,7 @@
     width: 56px;
     height: 56px;
     border-radius: 50%;
-    background-color: #0066CC;
+    background-color: #0f4c81;
     color: white;
     border: none;
     font-size: 28px;
@@ -476,7 +484,7 @@
   }
   
   .fab:hover {
-    background-color: #0052a3;
+    background-color: #0f4c81;
   }
   
   .fab:active {
@@ -500,7 +508,7 @@
     border: none;
     font-size: 20px;
     cursor: pointer;
-    color: #0066CC;
+    color: #0f4c81;
     padding: 8px 0;
   }
   
@@ -542,7 +550,7 @@
 
   .autocomplete-items div:hover {
     background-color: #f0f9ff;
-    color: #0066CC;
+    color: #0f4c81;
   }
 
   .autocomplete-items div.selected {
@@ -664,11 +672,11 @@
 
   .obs-input:focus {
     outline: none;
-    border-color: #0066CC;
+    border-color: #0f4c81;
   }
 
   .btn-confirm {
-    background-color: #0066CC;
+    background-color: #0f4c81;
     color: white;
     border: none;
     padding: 12px;
@@ -681,7 +689,7 @@
   }
 
   .btn-confirm:hover {
-    background-color: #0052a3;
+    background-color: #0f4c81;
   }
 
   .btn-confirm:active {
@@ -690,10 +698,10 @@
 
   .add-patrimonio {
     background: none;
-    border: 1px dashed #0066CC;
+    border: 1px dashed #0f4c81;
     padding: 10px;
     border-radius: 10px;
-    color: #0066CC;
+    color: #0f4c81;
     cursor: pointer;
     width: 100%;
     margin-top: 8px;
@@ -716,7 +724,7 @@
 
   .patrimonio-input input:focus {
     outline: none;
-    border-color: #0066CC;
+    border-color: #0f4c81;
   }
 
   .remove-patrimonio {
@@ -753,7 +761,7 @@
 
   .search-input-full:focus {
     outline: none;
-    border-color: #0066CC;
+    border-color: #0f4c81;
   }
 
   .search-results, .recentes-list, .criticos-list {
@@ -804,7 +812,7 @@
 
   .input:focus {
     outline: none;
-    border-color: #0066CC;
+    border-color: #0f4c81;
     box-shadow: 0 0 0 2px rgba(0,102,204,0.1);
   }
 
@@ -819,12 +827,12 @@
   }
 
   .btn-primary {
-    background: #0066CC;
+    background: #0f4c81;
     color: white;
   }
 
   .btn-primary:active {
-    background: #004999;
+    background: #0f4c81;
   }
 
   /* Estado desabilitado do botão */
@@ -912,11 +920,11 @@ body.tecnico .search-container {
   color: #4A5568;
   margin: 0;
   margin-left: 20px;
-  line-height: 1.2; /* evita altura extra */
+  line-height: 1.2; 
 }
 
 .logo-login {
-  display: block;      /* permite centralizar com margin auto */
+  display: block;
   margin: 0 auto; 
   height: 120px;
   width: auto;
