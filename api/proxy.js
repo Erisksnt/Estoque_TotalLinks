@@ -2,11 +2,25 @@
 const { getEstoque, registrarRetirada, registrarInclusao, getTecnicos } = require('./sheets.js');
 
 module.exports = async function handler(req, res) {
-  // Configurar CORS
-  res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
-  
+  // Lista de origens permitidas (produção + desenvolvimento local)
+  const allowedOrigins = [
+    'https://totallinks-estoque.vercel.app',
+    'http://localhost:3000',
+    'http://127.0.0.1:3000'
+  ];
+
+  const origin = req.headers.origin;
+
+  // Verifica se a origem da requisição está na lista de permitidas
+  if (origin && allowedOrigins.includes(origin)) {
+    res.setHeader('Access-Control-Allow-Origin', origin);
+    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
+    res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+  } else if (origin) {
+    // Origem presente mas não autorizada -> bloqueia
+    return res.status(403).json({ error: 'Origem não autorizada' });
+  }
+
   if (req.method === 'OPTIONS') {
     return res.status(200).end();
   }
