@@ -393,9 +393,9 @@
     background: #EDF2F7;
   }
 
-  /* ============================================
-     BOTTOM NAVIGATION
-     ============================================ */
+   /* ============================================
+       BOTTOM NAVIGATION
+       ============================================ */
   .bottom-nav {
     position: fixed;
     bottom: 0;
@@ -410,6 +410,7 @@
   }
   
   .nav-item {
+    position: relative;  /* Necessário para posicionar o badge */
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -442,6 +443,23 @@
     font-weight: 600;
   }
   
+  /* Badge de notificações (Recentes) */
+  .badge {
+    position: absolute;
+    top: -5px;
+    right: -10px;
+    background-color: #DC3545;
+    color: white;
+    border-radius: 50%;
+    padding: 2px 6px;
+    font-size: 10px;
+    font-weight: bold;
+    min-width: 16px;
+    text-align: center;
+    line-height: 1;
+    display: none; /* controlado pelo JS */
+  }
+  
   /* Desktop: aumentar ainda mais */
   @media (min-width: 768px) {
     .bottom-nav {
@@ -459,8 +477,15 @@
     .nav-item {
       padding: 8px 20px;
     }
-  }
   
+    .badge {
+      top: -8px;
+      right: -8px;
+      padding: 3px 7px;
+      font-size: 11px;
+    }
+  }
+
   /* ============================================
       FAB - Floating Action Button (Botão Incluir)
      ============================================ */

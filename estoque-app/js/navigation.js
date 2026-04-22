@@ -1,6 +1,6 @@
 // estoque-app/js/navigation.js
 
-import { telaAnterior, setTelaAnterior, perfilAtual } from './state.js';
+import { telaAnterior, setTelaAnterior, perfilAtual, marcarRecentesComoVistos, atualizarBadgeRecentes } from './state.js';
 import { carregarRecentes } from './recentes.js';
 import { verTodosCriticos } from './categories.js';
 import { carregarMetricas, carregarCategoriasRapidas, carregarListaCritica } from './ui-helpers.js';
@@ -174,6 +174,11 @@ export function mostrarTela(telaId) {
   // Atualiza o active do bottom navigation
   atualizarBottomNavActive(telaId);
   
+  // Se for a tela de recentes, marca as movimentações como vistas
+  if (telaId === 'recentesScreen') {
+    marcarRecentesComoVistos();
+  }
+  
   // Mostra ou esconde o bottom navigation
   const bottomNav = document.querySelector('.bottom-nav');
   if (bottomNav) {
@@ -225,4 +230,7 @@ export function initNavigation() {
   if (backBtn) {
     backBtn.setAttribute('onclick', 'voltarDaRetirada()');
   }
+  
+  // Atualiza o badge de recentes ao carregar a navegação
+  atualizarBadgeRecentes();
 }

@@ -162,7 +162,7 @@ export function initRetirada() {
           quantidade: quantidade, 
           data: new Date().toLocaleString(), 
           tecnico: tecnicoAtual,
-          patrimonios: patrimonios,
+          patrimonio: patrimonios.join(', '),
           observacao: obsValue
         });
         alert(`✅ Retirada registrada!\nItem: ${itemAtual[1]}\nQuantidade: ${quantidade}`);

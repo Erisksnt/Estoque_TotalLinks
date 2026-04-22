@@ -15,12 +15,14 @@ export function carregarRecentes() {
   container.innerHTML = movimentacoesRecentes.map(m => {
     const tipoIcon = m.tipo === 'retirada' ? '-' : '+';
     const tipoTexto = m.tipo === 'retirada' ? 'Retirada' : 'Inclusão';
+    const patrimonio = m.patrimonio || m.patrimonios || '';
+    const patrimonioHtml = patrimonio ? ` (PAT: ${patrimonio})` : '';
     const observacaoHtml = m.observacao ? `<div style="font-size:11px; color:#718096; margin-top:4px;"> Obs: ${m.observacao}</div>` : '';
 
     return `
       <div class="recente-item">
         <div>
-          <strong>${m.item}</strong>
+          <strong>${m.item}${patrimonioHtml}</strong>
           <div style="font-size:12px;color:#718096;">
             ${tipoIcon} ${tipoTexto} • ${m.quantidade} un • ${m.tecnico}
           </div>
