@@ -1,6 +1,6 @@
 // estoque-app/js/withdrawal.js
 
-import { dadosEstoque, itemAtual, tecnicoAtual, setItemAtual, setTelaAnterior, addMovimentacaoRecente } from './state.js';
+import { dadosEstoque, itemAtual, tecnicoAtual, setItemAtual, setTelaAnterior, addMovimentacaoRecente, atualizarBadgeGlobal } from './state.js';
 import { apiRegistrarRetirada } from './api.js';
 import { carregarEstoque } from './cache.js';
 import { mostrarTela, mostrarTelaPrincipal } from './navigation.js';
@@ -8,7 +8,6 @@ import { CATEGORIAS_COM_PATRIMONIO } from './config.js';
 
 // Abre a tela de retirada para um item específico
 export function abrirRetirada(nomeItem) {
-  // Guarda a tela ativa antes de abrir a retirada
   const telas = ['mainScreen', 'itemsScreen', 'searchScreen', 'recentesScreen', 'criticosScreen'];
   for (let tela of telas) {
     const el = document.getElementById(tela);
@@ -24,7 +23,6 @@ export function abrirRetirada(nomeItem) {
   
   const withdrawItemName = document.getElementById('withdrawItemName');
   const withdrawItemStock = document.getElementById('withdrawItemStock');
-  
   if (withdrawItemName) withdrawItemName.textContent = item[1];
   if (withdrawItemStock) withdrawItemStock.innerHTML = `Estoque atual: ${item[3]} ${item[2]}`;
   
@@ -39,7 +37,6 @@ export function abrirRetirada(nomeItem) {
   
   const precisaPatrimonio = CATEGORIAS_COM_PATRIMONIO.includes(item[0]) && item[2] === 'un';
   const containerPatri = document.getElementById('patrimoniosContainer');
-  
   if (containerPatri) {
     containerPatri.style.display = precisaPatrimonio ? 'block' : 'none';
     if (precisaPatrimonio) renderizarPatrimonios();
@@ -48,19 +45,11 @@ export function abrirRetirada(nomeItem) {
   mostrarTela('withdrawScreen');
 }
 
-// Renderiza os campos de patrimônio conforme a quantidade
 function renderizarPatrimonios() {
   const qtdeValor = document.getElementById('qtdeValor');
   const qtde = qtdeValor ? parseInt(qtdeValor.textContent) : 1;
   const container = document.getElementById('patrimoniosList');
-  const addBtn = document.getElementById('addPatrimonio');
-  
   if (!container) return;
-  
-  if (addBtn) {
-    addBtn.style.display = 'none';
-  }
-  
   let html = '';
   for (let i = 0; i < qtde; i++) {
     html += `
@@ -73,9 +62,7 @@ function renderizarPatrimonios() {
   container.innerHTML = html;
 }
 
-// Inicializa os controles da tela de retirada (quantidade, confirmação)
 export function initRetirada() {
-  // Botão de diminuir quantidade
   const qtdeMenos = document.getElementById('qtdeMenos');
   if (qtdeMenos) {
     qtdeMenos.addEventListener('click', () => {
@@ -89,7 +76,6 @@ export function initRetirada() {
     });
   }
 
-  // Botão de aumentar quantidade
   const qtdeMais = document.getElementById('qtdeMais');
   if (qtdeMais) {
     qtdeMais.addEventListener('click', () => {
@@ -110,7 +96,6 @@ export function initRetirada() {
     });
   }
 
-  // Botão confirmar retirada
   const btnConfirmar = document.getElementById('btnConfirmar');
   if (btnConfirmar) {
     btnConfirmar.addEventListener('click', async () => {
@@ -131,7 +116,6 @@ export function initRetirada() {
         if (withdrawError) withdrawError.textContent = `Informe exatamente ${quantidade} patrimônio(s)`;
         return;
       }
-      
       if (precisaPatrimonio) {
         const algumVazio = patrimonios.some(p => p === '');
         if (algumVazio) {
@@ -156,17 +140,23 @@ export function initRetirada() {
       });
       
       if (resultado.success) {
+        // Adiciona à lista local (opcional, para compatibilidade)
         addMovimentacaoRecente({ 
           tipo: 'retirada',
           item: itemAtual[1], 
           quantidade: quantidade, 
           data: new Date().toLocaleString(), 
           tecnico: tecnicoAtual,
-          patrimonio: patrimonios.join(', '),
-          observacao: obsValue
+          observacao: obsValue,
+          patrimonio: patrimonios.join(', ')
         });
+        
         alert(`✅ Retirada registrada!\nItem: ${itemAtual[1]}\nQuantidade: ${quantidade}`);
         await carregarEstoque(true);
+        
+        // Atualiza o badge global de notificações
+        await atualizarBadgeGlobal();
+        
         mostrarTelaPrincipal();
       } else {
         if (withdrawError) withdrawError.textContent = resultado.error;

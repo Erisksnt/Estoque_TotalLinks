@@ -61,7 +61,9 @@ export default async function handler(req, res) {
     return res.status(200).json({
       sucesso: true,
       tecnicoNome: tecnico.nome,
-      perfil: tecnico.perfil || 'tecnico'
+      perfil: tecnico.perfil || 'tecnico',
+      pin: tecnico.pin
+      
     });
   } catch (error) {
     console.error('Erro em validarLogin:', error);

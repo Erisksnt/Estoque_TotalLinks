@@ -7,7 +7,7 @@ import { initSearch } from './search.js';
 import { initRetirada, abrirRetirada } from './withdrawal.js';
 import { initSyncButton } from './sync.js';
 import { abrirCategoria, verTodosCriticos } from './categories.js';
-import { tecnicoAtual } from './state.js';
+import { tecnicoAtual, atualizarBadgeGlobal } from './state.js';
 import { carregarEstoque } from './cache.js';
 
 // Exporta funções globais para os onclick do HTML
@@ -48,4 +48,11 @@ document.addEventListener('DOMContentLoaded', async () => {
       mostrarTela('inclusaoScreen');
     });
   }
+
+  // 🔁 Atualiza o badge automaticamente a cada 10 minutos (para usuários logados)
+  setInterval(() => {
+    if (tecnicoAtual) {
+      atualizarBadgeGlobal().catch(console.error);
+    }
+  }, 600000);
 });

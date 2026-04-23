@@ -1,66 +1,43 @@
 // estoque-app/js/navigation.js
 
-import { telaAnterior, setTelaAnterior, perfilAtual, marcarRecentesComoVistos, atualizarBadgeRecentes } from './state.js';
+import { telaAnterior, setTelaAnterior, perfilAtual, marcarRecentesComoVistos, atualizarBadgeGlobal } from './state.js';
 import { carregarRecentes } from './recentes.js';
 import { verTodosCriticos } from './categories.js';
 import { carregarMetricas, carregarCategoriasRapidas, carregarListaCritica } from './ui-helpers.js';
 
 // Atualiza o ícone ativo do bottom navigation
 function atualizarBottomNavActive(telaId) {
-  // Remove active de todos os itens
   document.querySelectorAll('.nav-item').forEach(nav => {
     nav.classList.remove('active');
   });
-  
-  // Mapeamento de telas para botões
   const mapa = {
     'mainScreen': 'home',
     'searchScreen': 'search',
     'recentesScreen': 'recentes',
     'criticosScreen': 'criticos'
   };
-  
   const navTarget = mapa[telaId];
   if (navTarget) {
     const botao = document.querySelector(`.nav-item[data-nav="${navTarget}"]`);
-    if (botao) {
-      botao.classList.add('active');
-    }
+    if (botao) botao.classList.add('active');
   }
 }
 
-// Função para adaptar a interface conforme o perfil
 function aplicarAdaptacaoPorPerfil() {
   const isGerente = perfilAtual === 'adm' || perfilAtual === 'gerente';
-  
-  // Elementos que apenas o gerente visualiza
   const elementosGerente = [
     document.getElementById('totalCategorias'),
     document.getElementById('totalCriticos'),
     document.querySelector('.metrics-grid'),
     document.getElementById('criticalList')
   ];
-  
-  // Esconde ou mostra elementos conforme perfil
   elementosGerente.forEach(el => {
-    if (el) {
-      el.style.display = isGerente ? '' : 'none';
-    }
+    if (el) el.style.display = isGerente ? '' : 'none';
   });
-  
-  // Esconde o link "Ver todos" dos críticos
   const sectionLink = document.querySelector('.section-header .section-link');
-  if (sectionLink) {
-    sectionLink.style.display = isGerente ? '' : 'none';
-  }
-  
-  // Ajusta o card de sincronização
+  if (sectionLink) sectionLink.style.display = isGerente ? '' : 'none';
   const syncCard = document.querySelector('.sync-card');
-  if (syncCard) {
-    syncCard.style.marginTop = isGerente ? '0' : '20px';
-  }
-  
-  // Adiciona classe ao body para CSS adicional
+  if (syncCard) syncCard.style.marginTop = isGerente ? '0' : '20px';
   if (isGerente) {
     document.body.classList.add('gerente');
     document.body.classList.remove('tecnico');
@@ -68,59 +45,41 @@ function aplicarAdaptacaoPorPerfil() {
     document.body.classList.add('tecnico');
     document.body.classList.remove('gerente');
   }
-  
-  // Ajusta a aba Crítico no bottom navigation conforme perfil
   const navCritico = document.querySelector('.nav-item[data-nav="criticos"]');
-  if (navCritico) {
-    navCritico.style.display = isGerente ? 'flex' : 'none';
-  }
+  if (navCritico) navCritico.style.display = isGerente ? 'flex' : 'none';
 }
 
-// Função pública para atualizar toda a navegação (visibilidade e eventos)
 export function atualizarNavegacao() {
   const navItems = document.querySelectorAll('.nav-item');
   const isGerente = perfilAtual === 'adm' || perfilAtual === 'gerente';
-  
   navItems.forEach(nav => {
     const tela = nav.dataset.nav;
-    
-    // Atualiza visibilidade
     if (tela === 'criticos') {
       nav.style.display = isGerente ? 'flex' : 'none';
     } else {
       nav.style.display = 'flex';
     }
-    
-    // Remove eventos antigos clonando o elemento
     const newNav = nav.cloneNode(true);
     nav.parentNode.replaceChild(newNav, nav);
-    
-    // Adiciona evento novamente
-    newNav.addEventListener('click', () => {
+    newNav.addEventListener('click', async () => {
       const navTela = newNav.dataset.nav;
       if (navTela === 'home') {
         mostrarTelaPrincipal();
       } else if (navTela === 'search') {
         mostrarTela('searchScreen');
       } else if (navTela === 'recentes') {
-        carregarRecentes();
+        await carregarRecentes();
         mostrarTela('recentesScreen');
       } else if (navTela === 'criticos') {
-        if (perfilAtual === 'adm' || perfilAtual === 'gerente') {
-          verTodosCriticos();
-        }
+        if (isGerente) verTodosCriticos();
       }
     });
   });
-  
-  // Força a exibição do bottom nav (caso esteja oculto)
   const bottomNav = document.querySelector('.bottom-nav');
   if (bottomNav && perfilAtual !== null) {
     bottomNav.style.display = 'flex';
     bottomNav.style.visibility = 'visible';
   }
-  
-  // Reaplica adaptação da interface
   aplicarAdaptacaoPorPerfil();
 }
 
@@ -133,7 +92,6 @@ export function mostrarTelaPrincipal() {
   const recentesScreen = document.getElementById('recentesScreen');
   const criticosScreen = document.getElementById('criticosScreen');
   const inclusaoScreen = document.getElementById('inclusaoScreen');
-  
   if (mainScreen) mainScreen.classList.add('active');
   if (loginScreen) loginScreen.classList.remove('active');
   if (itemsScreen) itemsScreen.classList.remove('active');
@@ -142,27 +100,22 @@ export function mostrarTelaPrincipal() {
   if (recentesScreen) recentesScreen.classList.remove('active');
   if (criticosScreen) criticosScreen.classList.remove('active');
   if (inclusaoScreen) inclusaoScreen.classList.remove('active');
-  
-  // Atualiza o active do bottom navigation
   atualizarBottomNavActive('mainScreen');
-  
-  // FORÇA A REMOÇÃO DO ESTILO INLINE DO BOTTOM NAVIGATION
   const bottomNav = document.querySelector('.bottom-nav');
   if (bottomNav) {
     bottomNav.style.display = 'flex';
     bottomNav.style.visibility = 'visible';
   }
-  
-  // Aplica adaptação por perfil
   aplicarAdaptacaoPorPerfil();
-  
-  // Carrega os dados
   carregarMetricas();
   carregarCategoriasRapidas();
   carregarListaCritica();
+  
+  // Atualiza a navegação (eventos de clique) APÓS a tela estar carregada
+  atualizarNavegacao();
 }
 
-export function mostrarTela(telaId) {
+export async function mostrarTela(telaId) {
   const telas = ['mainScreen', 'loginScreen', 'itemsScreen', 'withdrawScreen', 'searchScreen', 'recentesScreen', 'criticosScreen', 'inclusaoScreen'];
   telas.forEach(tela => {
     const el = document.getElementById(tela);
@@ -170,16 +123,18 @@ export function mostrarTela(telaId) {
   });
   const telaAtiva = document.getElementById(telaId);
   if (telaAtiva) telaAtiva.classList.add('active');
-  
-  // Atualiza o active do bottom navigation
   atualizarBottomNavActive(telaId);
   
-  // Se for a tela de recentes, marca as movimentações como vistas
+  // Se for a tela de recentes, zera o badge imediatamente e depois atualiza o servidor
   if (telaId === 'recentesScreen') {
-    marcarRecentesComoVistos();
+    // 1. Zera o badge instantaneamente (feedback visual)
+    const badge = document.getElementById('badge-recentes');
+    if (badge) badge.style.display = 'none';
+    
+    // 2. Envia a atualização ao backend em segundo plano (não espera)
+    marcarRecentesComoVistos().catch(console.error);
   }
   
-  // Mostra ou esconde o bottom navigation
   const bottomNav = document.querySelector('.bottom-nav');
   if (bottomNav) {
     if (telaId === 'loginScreen') {
@@ -189,8 +144,6 @@ export function mostrarTela(telaId) {
       bottomNav.style.visibility = 'visible';
     }
   }
-  
-  // Se for a tela de login, restaura o botão
   if (telaId === 'loginScreen') {
     const btnLogin = document.getElementById('btnLogin');
     if (btnLogin) {
@@ -222,15 +175,11 @@ export function voltarDaRetirada() {
 }
 
 export function initNavigation() {
-  // Configura a navegação inicial (visibilidade e eventos)
-  atualizarNavegacao();
-  
-  // Ajusta o botão voltar na tela de retirada (onclick)
+  // Não chama atualizarNavegacao() aqui – será chamada por mostrarTelaPrincipal após o login
   const backBtn = document.querySelector('#withdrawScreen .back-btn');
   if (backBtn) {
     backBtn.setAttribute('onclick', 'voltarDaRetirada()');
   }
-  
-  // Atualiza o badge de recentes ao carregar a navegação
-  atualizarBadgeRecentes();
+  // Atualiza o badge global ao carregar a navegação (assíncrono)
+  atualizarBadgeGlobal().catch(console.error);
 }

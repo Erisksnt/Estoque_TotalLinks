@@ -15,16 +15,15 @@ const savedPerfil = sessionStorage.getItem('perfilLogado');
 
 if (savedTecnico) {
   tecnicoAtual = savedTecnico;
-  perfilAtual = savedPerfil || 'tecnico'; // padrão é técnico
+  perfilAtual = savedPerfil || 'tecnico';
 }
 
-// Carrega as movimentações do localStorage ao iniciar
+// Carrega as movimentações do localStorage ao iniciar (ainda pode ser útil)
 try {
   const savedMovimentacoes = localStorage.getItem('movimentacoesRecentes');
   if (savedMovimentacoes) {
     movimentacoesRecentes = JSON.parse(savedMovimentacoes);
   } else {
-    // Migração de dados antigos (retiradasRecentes)
     const oldRetiradas = localStorage.getItem('retiradasRecentes');
     if (oldRetiradas) {
       const retiradas = JSON.parse(oldRetiradas);
@@ -75,7 +74,7 @@ export function setTelaAnterior(tela) {
 }
 
 // ============================================
-// FUNÇÕES PARA MOVIMENTAÇÕES RECENTES E BADGE
+// FUNÇÕES DE MOVIMENTAÇÕES (locais) – mantidas para compatibilidade
 // ============================================
 
 export function getMovimentacoesRecentes() {
@@ -85,68 +84,76 @@ export function getMovimentacoesRecentes() {
 export function setMovimentacoesRecentes(lista) {
   movimentacoesRecentes = lista;
   localStorage.setItem('movimentacoesRecentes', JSON.stringify(lista));
-  atualizarBadgeRecentes();
 }
 
-// Data da última vez que o usuário visualizou a aba "Recentes"
-let ultimaVisualizacaoRecentes = localStorage.getItem('ultimaVisualizacaoRecentes') 
-  ? new Date(localStorage.getItem('ultimaVisualizacaoRecentes')) 
-  : new Date();
-
-export function marcarRecentesComoVistos() {
-  ultimaVisualizacaoRecentes = new Date();
-  localStorage.setItem('ultimaVisualizacaoRecentes', ultimaVisualizacaoRecentes.toISOString());
-  atualizarBadgeRecentes();
-}
-
-// Converte string "dd/mm/aaaa, HH:MM:SS" para objeto Date
-function parseDataMovimentacao(dataStr) {
-  const [dataPart, horaPart] = dataStr.split(', ');
-  const [dia, mes, ano] = dataPart.split('/');
-  return new Date(`${ano}-${mes}-${dia}T${horaPart}`);
-}
-
-export function contarNovasMovimentacoes() {
-  if (!movimentacoesRecentes.length) return 0;
-  return movimentacoesRecentes.filter(m => {
-    const dataMov = parseDataMovimentacao(m.data);
-    return dataMov > ultimaVisualizacaoRecentes;
-  }).length;
-}
-
-export function atualizarBadgeRecentes() {
-  const badge = document.getElementById('badge-recentes');
-  if (!badge) return;
-  const count = contarNovasMovimentacoes();
-  if (count > 0) {
-    badge.textContent = count > 9 ? '9+' : count;
-    badge.style.display = 'flex';
-  } else {
-    badge.style.display = 'none';
-  }
-}
-
-// Adiciona uma nova movimentação e atualiza o badge
 export function addMovimentacaoRecente(movimentacao) {
-  // Garante que a movimentação tem uma data válida no formato correto
   if (!movimentacao.data) {
-    movimentacao.data = new Date().toLocaleString('pt-BR'); // "dd/mm/aaaa, HH:MM:SS"
+    movimentacao.data = new Date().toLocaleString();
   }
-  
   movimentacoesRecentes.unshift(movimentacao);
-  // Limita a 50 movimentações (pode ajustar)
   if (movimentacoesRecentes.length > 50) movimentacoesRecentes.pop();
   localStorage.setItem('movimentacoesRecentes', JSON.stringify(movimentacoesRecentes));
-  
-  // Atualiza o badge de notificações
-  atualizarBadgeRecentes();
 }
 
 // ============================================
-// EXPORTA FUNÇÕES PARA O ESCOPO GLOBAL (OPCIONAL, PARA DEBUG)
+// BADGE GLOBAL (usando NOME do técnico)
 // ============================================
-if (typeof window !== 'undefined') {
-  window.atualizarBadgeRecentes = atualizarBadgeRecentes;
-  window.addMovimentacaoRecente = addMovimentacaoRecente;
-  window.marcarRecentesComoVistos = marcarRecentesComoVistos;
+
+// Armazena o último contador global conhecido (para evitar chamadas desnecessárias)
+let ultimoContadorConhecido = 0;
+
+// Busca o badge diretamente do backend usando o NOME
+async function buscarBadge() {
+  if (!tecnicoAtual) return 0;
+  try {
+    // Agora usa 'nome' na query string
+    const response = await fetch(`/api/proxy?action=obterBadge&nome=${encodeURIComponent(tecnicoAtual)}`);
+    const data = await response.json();
+    if (data.badge !== undefined) {
+      ultimoContadorConhecido = data.global;
+      return data.badge;
+    }
+    return 0;
+  } catch (error) {
+    console.error('Erro ao buscar badge:', error);
+    return 0;
+  }
+}
+
+export async function atualizarBadgeGlobal() {
+  const badgeElement = document.getElementById('badge-recentes');
+  if (!badgeElement) return;
+  const count = await buscarBadge();
+  if (count > 0) {
+    badgeElement.textContent = count > 9 ? '9+' : count;
+    badgeElement.style.display = 'flex';
+  } else {
+    badgeElement.style.display = 'none';
+  }
+}
+
+// Marca as movimentações como vistas (atualiza o último contador do técnico no backend)
+export async function marcarRecentesComoVistos() {
+  if (!tecnicoAtual) return;
+  try {
+    // Obtém o contador global atual (usando nome)
+    const response = await fetch(`/api/proxy?action=obterBadge&nome=${encodeURIComponent(tecnicoAtual)}`);
+    const data = await response.json();
+    if (data.global !== undefined) {
+      // Envia a atualização para o backend (agora com campo 'nome')
+      await fetch('/api/proxy', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          action: 'atualizarVisualizacao',
+          nome: tecnicoAtual,           // ← campo 'nome' (não 'pin')
+          contadorGlobal: data.global
+        })
+      });
+      // Atualiza o badge após marcar como visto
+      await atualizarBadgeGlobal();
+    }
+  } catch (error) {
+    console.error('Erro ao marcar como visto:', error);
+  }
 }

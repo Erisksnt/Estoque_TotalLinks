@@ -1,8 +1,16 @@
 // api/proxy.js
-const { getEstoque, registrarRetirada, registrarInclusao, getTecnicos } = require('./sheets.js');
+const {
+  getEstoque,
+  registrarRetirada,
+  registrarInclusao,
+  getTecnicos,
+  getMovimentacoesGerais,
+  obterBadge,
+  atualizarUltimoContadorPorNome
+} = require('./sheets.js');
 
 module.exports = async function handler(req, res) {
-  // Lista de origens permitidas (produção + desenvolvimento local)
+  // Lista de origens permitidas
   const allowedOrigins = [
     'https://totallinks-estoque.vercel.app',
     'http://localhost:3000',
@@ -11,13 +19,11 @@ module.exports = async function handler(req, res) {
 
   const origin = req.headers.origin;
 
-  // Verifica se a origem da requisição está na lista de permitidas
   if (origin && allowedOrigins.includes(origin)) {
     res.setHeader('Access-Control-Allow-Origin', origin);
     res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
     res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
   } else if (origin) {
-    // Origem presente mas não autorizada -> bloqueia
     return res.status(403).json({ error: 'Origem não autorizada' });
   }
 
@@ -25,11 +31,9 @@ module.exports = async function handler(req, res) {
     return res.status(200).end();
   }
   
-  // Processar GET
+  // GET
   if (req.method === 'GET') {
-    const { action } = req.query;
-    
-    console.log(`📥 GET request: action=${action}`);
+    const { action, nome } = req.query;
     
     try {
       let result;
@@ -37,6 +41,13 @@ module.exports = async function handler(req, res) {
         result = await getEstoque();
       } else if (action === 'getTecnicos') {
         result = await getTecnicos();
+      } else if (action === 'getMovimentacoesGerais') {
+        result = await getMovimentacoesGerais();
+      } else if (action === 'obterBadge') {
+        if (!nome) {
+          return res.status(400).json({ success: false, error: 'Nome não fornecido' });
+        }
+        result = await obterBadge(nome);
       } else {
         result = { success: false, error: 'Ação não reconhecida' };
       }
@@ -48,11 +59,9 @@ module.exports = async function handler(req, res) {
     }
   }
   
-  // Processar POST
+  // POST
   if (req.method === 'POST') {
     const data = req.body;
-    
-    console.log(`📥 POST request: action=${data.action}`);
     
     try {
       let result;
@@ -60,6 +69,13 @@ module.exports = async function handler(req, res) {
         result = await registrarRetirada(data);
       } else if (data.action === 'registrarInclusao') {
         result = await registrarInclusao(data);
+      } else if (data.action === 'atualizarVisualizacao') {
+        const { nome, contadorGlobal } = data;
+        if (!nome) {
+          return res.status(400).json({ success: false, error: 'Nome não fornecido' });
+        }
+        await atualizarUltimoContadorPorNome(nome, contadorGlobal);
+        result = { success: true, message: 'Visualização atualizada' };
       } else {
         result = { success: false, error: 'Ação não reconhecida' };
       }
