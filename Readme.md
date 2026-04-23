@@ -33,13 +33,13 @@ O backend já está incluso no repositório na pasta `/api`. As funções server
 - `GET /api/proxy?action=getEstoque` – Busca estoque
 - `GET /api/proxy?action=getTecnicos` – Busca técnicos
 - `POST /api/proxy` – Registra retirada ou inclusão
-- `POST /api/validarLogin` – Valida login (senha + PIN)
+- `POST /api/validarLogin` – Valida login
 
 ### 2. Google Sheets (Configuração)
 
 1. Crie uma planilha com as seguintes abas:
    - `CVS` – Estoque principal (colunas: Categoria, Item, Unidade, Quantidade, Mínimo)
-   - `TECNICOS` – Colunas: PIN, Nome, Status (SIM/NÃO)
+   - `TECNICOS` – Com Tecnicos que acessarão
    - `LOG_RETIRADAS` – Log automático de retiradas
    - `LOG_INCLUIDOS` – Log automático de inclusões
 
@@ -56,7 +56,7 @@ O backend já está incluso no repositório na pasta `/api`. As funções server
 
 1. Conecte o repositório à [Vercel](https://vercel.com)
 2. Adicione as variáveis de ambiente:
-   - `SENHA_EQUIPE` – Senha de acesso da equipe (ex: '`Teste`')
+   - `SENHA` – Senha de acesso da equipe (ex: '`Teste`')
    - `GOOGLE_SERVICE_ACCOUNT_KEY` – Conteúdo do JSON da Service Account
 3. Faça o deploy – a Vercel detectará automaticamente os arquivos estáticos e as serverless functions
 
@@ -90,39 +90,37 @@ A cada `git push` na branch `main`, a Vercel fará um novo deploy automático.
 
 - Frontend: http://localhost:3000
 
-- API: http://localhost:3000/api/proxy?action=getEstoque
-
 # 📁 Estrutura do Projeto
 
     Estoque_Totallinks/
-    ├── api/                       # Backend serverless (Node.js)
-    │   ├── proxy.js              # Roteador principal das APIs
-    │   ├── sheets.js             # Integração com Google Sheets API
-    │   └── validarLogin.js       # Validação de login
-    ├── estoque-app/               # Frontend modular
-    │   ├── css/
-    │   │   └── style.css         # Estilos responsivos
-    │   ├── js/                   # Módulos JavaScript
-    │   │   ├── app.js            # Ponto de entrada
-    │   │   ├── config.js         # Configurações (API_URL, cache, etc.)
-    │   │   ├── state.js          # Estado global
-    │   │   ├── api.js            # Chamadas à API
-    │   │   ├── cache.js          # Gerenciamento de cache
-    │   │   ├── login.js          # Login/logout
-    │   │   ├── navigation.js     # Navegação entre telas
-    │   │   ├── categories.js     # Categorias e listagem
-    │   │   ├── withdrawal.js     # Retirada de itens
-    │   │   ├── inclusao.js       # Inclusão de itens
-    │   │   ├── search.js         # Busca de itens
-    │   │   ├── recentes.js       # Histórico de movimentações
-    │   │   ├── sync.js           # Sincronização manual
-    │   │   └── ui-helpers.js     # Funções de UI compartilhadas
-    │   └── index.html            # Estrutura HTML das telas
-    ├── .env.local                # Variáveis de ambiente
+    ├── api/ # Backend serverless (Node.js)
+    │ ├── proxy.js # Roteador principal das APIs
+    │ ├── sheets.js # Integração com Google Sheets API
+    │ └── validarLogin.js # Validação de login
+    ├── estoque-app/ # Frontend modular
+    │ ├── css/
+    │ │ └── style.css # Estilos responsivos
+    │ ├── js/ # Módulos JavaScript
+    │ │ ├── app.js # Ponto de entrada
+    │ │ ├── config.js # Configurações 
+    │ │ ├── state.js # Estado global
+    │ │ ├── api.js # Chamadas à API
+    │ │ ├── cache.js # Gerenciamento de cache
+    │ │ ├── login.js # Login/logout
+    │ │ ├── navigation.js # Navegação entre telas
+    │ │ ├── categories.js # Categorias e listagem
+    │ │ ├── withdrawal.js # Retirada de itens
+    │ │ ├── inclusao.js # Inclusão de itens
+    │ │ ├── search.js # Busca de itens
+    │ │ ├── recentes.js # Histórico de movimentações
+    │ │ ├── sync.js # Sincronização manual
+    │ │ └── ui-helpers.js # Funções de UI compartilhadas
+    │ └── index.html # Estrutura HTML das telas
+    ├── Guia-Usuario.md # Um guia de como usar 
     ├── .gitignore
-    ├── package.json              # Dependências
-    ├── vercel.json               # Configuração de rotas da Vercel
-    └── README.md                 # Este arquivo
+    ├── package.json # Dependências (googleapis, etc.)
+    ├── vercel.json # Configuração de rotas da Vercel
+    └── README.md # Este arquivo
 
 
 ## 🔧 Tecnologias Utilizadas
