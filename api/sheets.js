@@ -62,8 +62,17 @@ async function getEstoque() {
     if (!rows || rows.length === 0) {
       return { success: false, error: 'Nenhum dado encontrado na planilha CVS' };
     }
-    const headers = rows[0];
-    const items = rows.slice(1);
+
+    const items = rows.filter(row => {
+      const categoria = row[0] ? String(row[0]).trim() : '';
+      const nomeItem = row[1] ? String(row[1]).trim() : '';
+      if (categoria === '' || categoria.toLowerCase() === 'categoria') return false;
+      if (nomeItem === '') return false;
+      return true;
+    });
+
+    const headers = [];
+
     return { success: true, data: { headers, items } };
   } catch (error) {
     console.error('Erro ao buscar estoque:', error);
