@@ -15,7 +15,6 @@ let itemSelecionado = null;      // guarda o objeto do item selecionado
 // FUNÇÕES AUXILIARES
 // ============================================
 
-// Renderiza campos de patrimônio conforme quantidade
 function renderizarPatrimoniosInclusao() {
   const qtdeValor = document.getElementById('qtdeInclusaoValor');
   const qtde = qtdeValor ? parseInt(qtdeValor.textContent) : 1;
@@ -33,7 +32,6 @@ function renderizarPatrimoniosInclusao() {
   container.innerHTML = html;
 }
 
-// Verifica se o item precisa de patrimônio (categoria + unidade)
 function itemPrecisaPatrimonio(item) {
   if (!item) return false;
   const categoria = item[0];
@@ -41,18 +39,14 @@ function itemPrecisaPatrimonio(item) {
   return CATEGORIAS_COM_PATRIMONIO.includes(categoria) && unidade === 'un';
 }
 
-// Atualiza a interface com base no item selecionado
 function atualizarInterfacePorItem(item) {
   if (!item) return;
-  // Preenche categoria
   const categoriaInput = document.getElementById('categoriaInclusao');
   if (categoriaInput) categoriaInput.value = item[0];
-  // Armazena o nome do item no campo hidden
   const hiddenItem = document.getElementById('itemInclusaoHidden');
   if (hiddenItem) hiddenItem.value = item[1];
   itemSelecionado = item;
 
-  // Gerencia campo patrimônio
   const precisa = itemPrecisaPatrimonio(item);
   const patrimonioGroup = document.getElementById('patrimonioInclusaoGroup');
   if (precisa) {
@@ -65,7 +59,6 @@ function atualizarInterfacePorItem(item) {
   }
 }
 
-// Exibe sugestões de itens (busca em todo o estoque)
 function showItemBuscaSuggestions() {
   const input = document.getElementById('itemBuscaInclusao');
   const suggestionBox = document.getElementById('itemBuscaAutocompleteList');
@@ -74,7 +67,6 @@ function showItemBuscaSuggestions() {
     suggestionBox.style.display = 'none';
     return;
   }
-  // Filtra itens que contenham o termo no nome
   const itensFiltrados = dadosEstoque.filter(item => item[1].toLowerCase().includes(termo));
   const nomesUnicos = [...new Set(itensFiltrados.map(item => item[1]))];
   if (nomesUnicos.length === 0) {
@@ -85,14 +77,12 @@ function showItemBuscaSuggestions() {
   suggestionBox.style.display = 'block';
   currentFocus = -1;
 
-  // Adiciona evento de clique nas sugestões
   const items = suggestionBox.querySelectorAll('div');
   items.forEach(div => {
     div.addEventListener('click', (e) => {
       const nomeItem = e.target.textContent;
       input.value = nomeItem;
       suggestionBox.style.display = 'none';
-      // Procura o item completo em dadosEstoque
       const itemEncontrado = dadosEstoque.find(item => item[1] === nomeItem);
       if (itemEncontrado) {
         atualizarInterfacePorItem(itemEncontrado);
@@ -103,7 +93,6 @@ function showItemBuscaSuggestions() {
   });
 }
 
-// Navegação por teclado nas sugestões
 function handleItemBuscaKeydown(e) {
   const suggestionBox = document.getElementById('itemBuscaAutocompleteList');
   if (!suggestionBox) return;
@@ -141,7 +130,6 @@ function highlightSuggestion(items) {
   });
 }
 
-// Controles de quantidade
 function initQuantidadeInclusao() {
   const qtdeMenos = document.getElementById('qtdeInclusaoMenos');
   const qtdeMais = document.getElementById('qtdeInclusaoMais');
@@ -238,6 +226,7 @@ async function salvarInclusao() {
       body: JSON.stringify(dados)
     });
     const resultado = await response.json();
+
     if (resultado.success) {
       addMovimentacaoRecente({
         tipo: 'inclusao',
@@ -248,10 +237,22 @@ async function salvarInclusao() {
         observacao,
         patrimonio: patrimonios.join(', ')
       });
-      alert('✅ Item incluído com sucesso!');
-      limparFormulario();
+
       await atualizarBadgeGlobal();
-      mostrarTela('mainScreen');
+
+      const incluirMais = confirm(`✅ Item incluído com sucesso!\nItem: ${itemNome}\nQuantidade: ${quantidade}\n\nDeseja incluir outro item?`);
+
+      if (incluirMais) {
+        limparFormulario();
+        const btn = document.getElementById('salvarInclusao');
+        if (btn) {
+          btn.disabled = false;
+          btn.textContent = 'Confirmar inclusão';
+        }
+        mostrarTela('inclusaoScreen');
+      } else {
+        mostrarTela('mainScreen');
+      }
     } else {
       alert('❌ Erro ao incluir: ' + (resultado.error || 'Tente novamente'));
     }
@@ -269,15 +270,12 @@ async function salvarInclusao() {
 // ============================================
 
 export function initInclusao() {
-  // Configura controles de quantidade
   initQuantidadeInclusao();
 
-  // Campo de busca de item
   const buscaInput = document.getElementById('itemBuscaInclusao');
   if (buscaInput) {
     buscaInput.addEventListener('input', showItemBuscaSuggestions);
     buscaInput.addEventListener('keydown', handleItemBuscaKeydown);
-    // Fecha sugestões ao clicar fora
     document.addEventListener('click', (e) => {
       const suggestionBox = document.getElementById('itemBuscaAutocompleteList');
       if (!buscaInput.contains(e.target) && suggestionBox && !suggestionBox.contains(e.target)) {
@@ -286,7 +284,6 @@ export function initInclusao() {
     });
   }
 
-  // Botões
   const backBtn = document.getElementById('backFromInclusao');
   if (backBtn) backBtn.addEventListener('click', () => mostrarTela('mainScreen'));
 
