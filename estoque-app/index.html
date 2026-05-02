@@ -116,40 +116,54 @@
       <div id="itemsContainer" class="items-list"></div>
     </div>
 
-    <!-- Tela de Retirada -->
-    <div id="withdrawScreen" class="screen">
-      <div class="screen-header">
-        <button class="back-btn" onclick="mostrarTelaPrincipal('itemsScreen')">← Voltar</button>
-        <h2>Retirar item</h2>
+  <!-- Tela de Retirada -->
+  <div id="withdrawScreen" class="screen">
+    <div class="screen-header">
+      <button class="back-btn" id="backFromWithdraw">← Voltar</button>
+      <h2>Retirar item</h2>
+    </div>
+  
+    <div class="form-container">
+      <!-- Campo de busca de item -->
+      <div class="form-group autocomplete-container">
+        <label>Buscar Item</label>
+        <input type="text" id="itemBuscaRetirada" class="input" placeholder="Digite o nome do item" autocomplete="off">
+        <div id="itemBuscaRetiradaAutocompleteList" class="autocomplete-items"></div>
       </div>
-      
-      <div class="withdraw-card">
-        <div class="item-name" id="withdrawItemName"></div>
-        <div class="item-stock" id="withdrawItemStock"></div>
-        
-        <div class="quantity-section">
-          <label>Quantidade</label>
-          <div class="quantity-control">
-            <button id="qtdeMenos" class="qty-btn">-</button>
-            <span id="qtdeValor" class="qty-value">1</span>
-            <button id="qtdeMais" class="qty-btn">+</button>
-          </div>
+    
+      <!-- Categoria (somente leitura) -->
+      <div class="form-group">
+        <label>Categoria</label>
+        <input type="text" id="categoriaRetirada" class="input" readonly placeholder="Selecionada automaticamente">
+      </div>
+    
+      <!-- Campo oculto para armazenar o item selecionado -->
+      <input type="hidden" id="itemRetiradaHidden">
+    
+      <div class="form-group">
+        <label>Quantidade</label>
+        <div class="quantity-control">
+          <button type="button" id="qtdeRetiradaMenos" class="qty-btn">-</button>
+          <span id="qtdeRetiradaValor" class="qty-value">1</span>
+          <button type="button" id="qtdeRetiradaMais" class="qty-btn">+</button>
         </div>
-        
-        <div id="patrimoniosContainer" style="display:none;">
-          <label>Patrimônios</label>
-          <div id="patrimoniosList"></div>
-        </div>
-        
-        <div class="obs-section">
-          <label>Observação</label>
-          <textarea id="observacao" class="obs-input" rows="2" placeholder="Motivo da retirada, local de instalação..."></textarea>
-        </div>
-        
-        <button id="btnConfirmar" class="btn-confirm">Confirmar retirada</button>
-        <div id="withdrawError" class="error"></div>
+      </div>
+    
+      <div id="patrimoniosRetiradaContainer" style="display: none;">
+        <label>Patrimônios</label>
+        <div id="patrimoniosRetiradaList"></div>
+      </div>
+    
+      <div class="form-group">
+        <label>Observação</label>
+        <textarea id="observacaoRetirada" class="obs-input" rows="2" placeholder="Motivo da retirada, local de instalação..."></textarea>
+      </div>
+    
+      <div class="form-buttons">
+        <button id="btnConfirmarRetirada" class="btn-confirm">Confirmar retirada</button>
       </div>
     </div>
+  </div>
 
     <!-- Tela de Busca Global -->
     <div id="searchScreen" class="screen">
