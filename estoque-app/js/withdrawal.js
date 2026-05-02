@@ -194,7 +194,6 @@ function validarFormularioRetirada() {
     alert('Informe uma quantidade válida');
     return false;
   }
-  // Validação de estoque (já feita no backend, mas podemos fazer frontend)
   if (itemSelecionado && quantidade > (Number(itemSelecionado[3]) || 0)) {
     alert(`Estoque insuficiente. Disponível: ${itemSelecionado[3]} ${itemSelecionado[2]}`);
     return false;
@@ -288,11 +287,10 @@ async function confirmarRetirada() {
 }
 
 // ============================================
-// FUNÇÕES EXPORTADAS (mantidas para compatibilidade)
+// FUNÇÕES EXPORTADAS
 // ============================================
 
 export function abrirRetirada(nomeItem) {
-  // Para compatibilidade com chamadas antigas (ex: clicar em item em outras telas)
   const inputBusca = document.getElementById('itemBuscaRetirada');
   if (inputBusca && nomeItem) {
     inputBusca.value = nomeItem;

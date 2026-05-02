@@ -24,8 +24,7 @@ export function renderizarItensPorCategoria(categoria) {
     const atual = Number(item[3]) || 0;
     const minimo = Number(item[4]) || 0;
     const status = atual <= minimo ? 'Crítico' : 'Normal';
-    
-    // Escapa aspas simples para não quebrar o onclick
+
     const nomeItemEscapado = item[1].replace(/'/g, "\\'");
     
     return `
@@ -60,16 +59,16 @@ export function verTodosCriticos() {
     const ratioA = atualA === 0 ? -1 : atualA / minimoA;
     const ratioB = atualB === 0 ? -1 : atualB / minimoB;
     
-    // Primeiro: zerados vêm primeiro
+    // Zerados vêm primeiro
     if (ratioA === -1 && ratioB !== -1) return -1;
     if (ratioA !== -1 && ratioB === -1) return 1;
     
-    // Depois: ordenar por ratio (menor primeiro = mais crítico)
+    // Ordenar por ratio (menor primeiro = mais crítico)
     if (ratioA !== ratioB) {
       return ratioA - ratioB;
     }
     
-    // Por último: ordenar por nome
+    // Ordenar por nome
     return a[1].localeCompare(b[1]);
   });
   
