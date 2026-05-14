@@ -181,11 +181,29 @@ function limparFormularioRetirada() {
   itemSelecionado = null;
   const errorDiv = document.getElementById('withdrawError');
   if (errorDiv) errorDiv.textContent = '';
+  const destinoTipo = document.getElementById('destinoTipo');
+  if (destinoTipo) destinoTipo.value = '';
+  const clienteContainer = document.getElementById('clienteContainer');
+  if (clienteContainer) clienteContainer.style.display = 'none';
+  const destinoCliente = document.getElementById('destinoCliente');
+  if (destinoCliente) destinoCliente.value = '';
 }
 
 function validarFormularioRetirada() {
   const itemHidden = document.getElementById('itemRetiradaHidden').value;
   const quantidade = parseInt(document.getElementById('qtdeRetiradaValor').textContent);
+  const destinoTipo = document.getElementById('destinoTipo').value;
+  if (!destinoTipo) {
+    alert('Selecione o destino do equipamento');
+    return false;
+  }
+  if (destinoTipo === 'cliente') {
+    const cliente = document.getElementById('destinoCliente').value.trim();
+    if (!cliente) {
+      alert('Informe o nome do cliente');
+      return false;
+    }
+  }
   if (!itemHidden) {
     alert('Selecione um item válido');
     return false;
@@ -217,6 +235,29 @@ function validarFormularioRetirada() {
 
 async function confirmarRetirada() {
   if (!validarFormularioRetirada()) return;
+
+  // Captura os dados de destino
+  const destinoTipo = document.getElementById('destinoTipo').value;
+  let destinoValor = '';
+
+  if (!destinoTipo) {
+    alert('Selecione o destino do equipamento');
+    return;
+  }
+
+  if (destinoTipo === 'cliente') {
+    destinoValor = document.getElementById('destinoCliente').value.trim();
+    if (!destinoValor) {
+      alert('Informe o nome do cliente');
+      return;
+    }
+  } else if (destinoTipo === 'tecnico') {
+    destinoValor = `Com técnico: ${tecnicoAtual}`;
+  } else {
+    alert('Opção de destino inválida');
+    return;
+  }
+
   const itemNome = document.getElementById('itemRetiradaHidden').value;
   const quantidade = parseInt(document.getElementById('qtdeRetiradaValor').textContent);
   const observacao = document.getElementById('observacaoRetirada').value.trim();
@@ -231,7 +272,9 @@ async function confirmarRetirada() {
     quantidade,
     tecnico: tecnicoAtual,
     observacao,
-    patrimonios
+    patrimonios,
+    destino_tipo: destinoTipo,
+    destino_valor: destinoValor
   };
 
   const btn = document.getElementById('btnConfirmarRetirada');
@@ -322,4 +365,21 @@ export function initRetirada() {
 
   const confirmBtn = document.getElementById('btnConfirmarRetirada');
   if (confirmBtn) confirmBtn.addEventListener('click', confirmarRetirada);
+
+  const destinoTipo = document.getElementById('destinoTipo');
+  const clienteContainer = document.getElementById('clienteContainer');
+
+  if (destinoTipo) {
+    destinoTipo.addEventListener('change', () => {
+      if (destinoTipo.value === 'cliente') {
+        clienteContainer.style.display = 'block';
+        document.getElementById('destinoCliente').required = true;
+      } else {
+        clienteContainer.style.display = 'none';
+        document.getElementById('destinoCliente').required = false;
+        document.getElementById('destinoCliente').value = '';
+      }
+    });
+  }
 }
+

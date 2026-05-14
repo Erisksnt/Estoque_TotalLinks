@@ -4,6 +4,7 @@ import { telaAnterior, setTelaAnterior, perfilAtual, marcarRecentesComoVistos, a
 import { carregarRecentes } from './recentes.js';
 import { verTodosCriticos } from './categories.js';
 import { carregarMetricas, carregarCategoriasRapidas, carregarListaCritica } from './ui-helpers.js';
+import { carregarEquipamentos } from './equipamentos.js';
 
 // Atualiza o ícone ativo do bottom navigation
 function atualizarBottomNavActive(telaId) {
@@ -14,7 +15,9 @@ function atualizarBottomNavActive(telaId) {
     'mainScreen': 'home',
     'searchScreen': 'search',
     'recentesScreen': 'recentes',
-    'criticosScreen': 'criticos'
+    'criticosScreen': 'criticos',
+    'equipamentosScreen': 'equipamentos',
+    'inclusaoScreen': 'inclusao'
   };
   const navTarget = mapa[telaId];
   if (navTarget) {
@@ -25,6 +28,8 @@ function atualizarBottomNavActive(telaId) {
 
 function aplicarAdaptacaoPorPerfil() {
   const isGerente = perfilAtual === 'adm' || perfilAtual === 'gerente';
+  
+  // Elementos que apenas o gerente visualiza
   const elementosGerente = [
     document.getElementById('totalCategorias'),
     document.getElementById('totalCriticos'),
@@ -34,10 +39,13 @@ function aplicarAdaptacaoPorPerfil() {
   elementosGerente.forEach(el => {
     if (el) el.style.display = isGerente ? '' : 'none';
   });
+  
   const sectionLink = document.querySelector('.section-header .section-link');
   if (sectionLink) sectionLink.style.display = isGerente ? '' : 'none';
+  
   const syncCard = document.querySelector('.sync-card');
   if (syncCard) syncCard.style.marginTop = isGerente ? '0' : '20px';
+  
   if (isGerente) {
     document.body.classList.add('gerente');
     document.body.classList.remove('tecnico');
@@ -45,22 +53,37 @@ function aplicarAdaptacaoPorPerfil() {
     document.body.classList.add('tecnico');
     document.body.classList.remove('gerente');
   }
-  const navCritico = document.querySelector('.nav-item[data-nav="criticos"]');
-  if (navCritico) navCritico.style.display = isGerente ? 'flex' : 'none';
+  
+  // Aba "Crítico" – apenas para gerente
+  const navEquipamentos = document.querySelector('.nav-item[data-nav="equipamentos"]');
+  if (navEquipamentos) {
+    if (perfilAtual === 'adm' || perfilAtual === 'gerente') {
+      navEquipamentos.style.display = 'flex';
+    } else {
+      navEquipamentos.style.display = 'none';
+      console.log('❌ Aba Equipamentos ESCONDIDA para perfil:', perfilAtual);
+    }
+  }
 }
 
 export function atualizarNavegacao() {
   const navItems = document.querySelectorAll('.nav-item');
   const isGerente = perfilAtual === 'adm' || perfilAtual === 'gerente';
+  
   navItems.forEach(nav => {
     const tela = nav.dataset.nav;
+    // Define visibilidade
     if (tela === 'criticos') {
+      nav.style.display = isGerente ? 'flex' : 'none';
+    } else if (tela === 'equipamentos') {
       nav.style.display = isGerente ? 'flex' : 'none';
     } else {
       nav.style.display = 'flex';
     }
+    
     const newNav = nav.cloneNode(true);
     nav.parentNode.replaceChild(newNav, nav);
+    
     newNav.addEventListener('click', async () => {
       const navTela = newNav.dataset.nav;
       if (navTela === 'home') {
@@ -72,9 +95,17 @@ export function atualizarNavegacao() {
         mostrarTela('recentesScreen');
       } else if (navTela === 'criticos') {
         if (isGerente) verTodosCriticos();
+      } else if (navTela === 'equipamentos') {
+        if (perfilAtual === 'adm' || perfilAtual === 'gerente') {
+          await carregarEquipamentos();
+          mostrarTela('equipamentosScreen');
+        }
+      } else if (navTela === 'inclusao') {
+        mostrarTela('inclusaoScreen');
       }
     });
   });
+  
   const bottomNav = document.querySelector('.bottom-nav');
   if (bottomNav && perfilAtual !== null) {
     bottomNav.style.display = 'flex';
@@ -100,6 +131,7 @@ export function mostrarTelaPrincipal() {
   if (recentesScreen) recentesScreen.classList.remove('active');
   if (criticosScreen) criticosScreen.classList.remove('active');
   if (inclusaoScreen) inclusaoScreen.classList.remove('active');
+  
   atualizarBottomNavActive('mainScreen');
   const bottomNav = document.querySelector('.bottom-nav');
   if (bottomNav) {
@@ -116,7 +148,7 @@ export function mostrarTelaPrincipal() {
 }
 
 export async function mostrarTela(telaId) {
-  const telas = ['mainScreen', 'loginScreen', 'itemsScreen', 'withdrawScreen', 'searchScreen', 'recentesScreen', 'criticosScreen', 'inclusaoScreen'];
+  const telas = ['mainScreen', 'loginScreen', 'itemsScreen', 'withdrawScreen', 'searchScreen', 'recentesScreen', 'criticosScreen', 'inclusaoScreen', 'equipamentosScreen'];
   telas.forEach(tela => {
     const el = document.getElementById(tela);
     if (el) el.classList.remove('active');
@@ -125,13 +157,9 @@ export async function mostrarTela(telaId) {
   if (telaAtiva) telaAtiva.classList.add('active');
   atualizarBottomNavActive(telaId);
   
-  // Se for a tela de recentes, zera o badge imediatamente e depois atualiza o servidor
   if (telaId === 'recentesScreen') {
-    // 1. Zera o badge instantaneamente (feedback visual)
     const badge = document.getElementById('badge-recentes');
     if (badge) badge.style.display = 'none';
-    
-    // 2. Envia a atualização ao backend em segundo plano (não espera)
     marcarRecentesComoVistos().catch(console.error);
   }
   
@@ -175,11 +203,12 @@ export function voltarDaRetirada() {
 }
 
 export function initNavigation() {
-  // Não chama atualizarNavegacao() aqui – será chamada por mostrarTelaPrincipal após o login
   const backBtn = document.querySelector('#withdrawScreen .back-btn');
   if (backBtn) {
     backBtn.setAttribute('onclick', 'voltarDaRetirada()');
   }
-  // Atualiza o badge global ao carregar a navegação (assíncrono)
+  // Atualiza o badge global ao carregar a navegação
   atualizarBadgeGlobal().catch(console.error);
+  // Força a adaptação do perfil (para exibir a aba Equipamentos se for adm)
+  aplicarAdaptacaoPorPerfil();
 }

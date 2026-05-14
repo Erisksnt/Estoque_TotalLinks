@@ -9,6 +9,7 @@ import { initSyncButton } from './sync.js';
 import { abrirCategoria, verTodosCriticos } from './categories.js';
 import { tecnicoAtual, atualizarBadgeGlobal } from './state.js';
 import { carregarEstoque } from './cache.js';
+import { initEquipamentos } from './equipamentos.js';
 
 // Exporta funções globais para os onclick do HTML
 window.abrirCategoria = abrirCategoria;
@@ -26,6 +27,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   initRetirada();
   initSyncButton();
   initInclusao();
+  initEquipamentos();
 
   // Verifica se há um técnico logado na sessão
   if (tecnicoAtual) {

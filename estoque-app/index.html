@@ -6,7 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="theme-color" content="#0066CC">
   <title>Totallinks - Estoque</title>
-  <link rel="stylesheet" href="estoque-app/css/style.css">
+  <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
   <div id="app">
@@ -84,10 +84,6 @@
         </div>
         <button id="syncNowBtn" class="btn-sync">Sincronizar agora</button>
       </div>
-
-        <!-- Botão Incluir -->
-        <button id="fabIncluir" class="fab" aria-label="Incluir item">+</button>
-
     </div>
     
      <!-- Bottom Navigation -->
@@ -105,6 +101,9 @@
       <div class="nav-item" data-nav="criticos">
         <div class="nav-label">Crítico</div>
       </div>
+      <div class="nav-item" data-nav="equipamentos">
+        <div class="nav-label">Equipamentos</div>
+      </div>
     </div>
 
     <!-- Tela de Itens por Categoria -->
@@ -115,6 +114,32 @@
       </div>
       <div id="itemsContainer" class="items-list"></div>
     </div>
+
+  <!-- Tela de Equipamentos (somente admin) -->
+  <div id="equipamentosScreen" class="screen">
+    <div class="screen-header">
+      <button class="back-btn" id="backFromEquipamentos">← Voltar</button>
+      <h2>Controle de Equipamentos</h2>
+    </div>
+    <div class="equipamentos-container">
+
+      <!-- Campo de busca -->
+    <div class="equipamentos-search">
+      <input type="text" id="equipamentosSearchInput" class="input" placeholder="Buscar por item...">
+    </div>
+
+      <!-- Abas -->
+      <div class="equipamentos-tabs">
+        <button id="tabEstoqueBtn" class="tab-btn active">Estoque</button>
+        <button id="tabTecnicosBtn" class="tab-btn">Técnicos</button>
+      </div>
+      <!-- Área da lista -->
+      <div id="equipamentosList" class="equipamentos-list"></div>
+    </div>
+
+    <!-- Botão Incluir -->
+    <button id="fabIncluir" class="fab" aria-label="Incluir item">+</button>
+  </div>
 
   <!-- Tela de Retirada -->
   <div id="withdrawScreen" class="screen">
@@ -153,6 +178,20 @@
         <label>Patrimônios</label>
         <div id="patrimoniosRetiradaList"></div>
       </div>
+
+      <div class="form-group">
+        <label>Destino *</label>
+        <select id="destinoTipo" class="input" required>
+          <option value="">Selecione...</option>
+          <option value="cliente">Cliente</option>
+          <option value="tecnico">Técnico (manutenção/precaução)</option>
+        </select>
+      </div>
+
+<div id="clienteContainer" class="form-group" style="display: none;">
+  <label>Nome do Cliente</label>
+  <input type="text" id="destinoCliente" class="input" placeholder="Digite o nome do cliente">
+</div>
     
       <div class="form-group">
         <label>Observação</label>

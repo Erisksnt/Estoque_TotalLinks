@@ -6,7 +6,8 @@ const {
   getTecnicos,
   getMovimentacoesGerais,
   obterBadge,
-  atualizarUltimoContadorPorNome
+  atualizarUltimoContadorPorNome,
+  getEquipamentosGeral
 } = require('./sheets.js');
 
 module.exports = async function handler(req, res) {
@@ -41,8 +42,10 @@ module.exports = async function handler(req, res) {
         result = await getEstoque();
       } else if (action === 'getTecnicos') {
         result = await getTecnicos();
-      } else if (action === 'getMovimentacoesGerais') {
+      } else if (action === 'getMovimentacoesGerais') { 
         result = await getMovimentacoesGerais();
+      } else if (action === 'getEquipamentosGeral') {
+        result = await getEquipamentosGeral();
       } else if (action === 'obterBadge') {
         if (!nome) {
           return res.status(400).json({ success: false, error: 'Nome não fornecido' });
@@ -57,6 +60,7 @@ module.exports = async function handler(req, res) {
       console.error('Erro no handler GET:', error);
       return res.status(500).json({ success: false, error: error.message });
     }
+  
   }
   
   // POST
