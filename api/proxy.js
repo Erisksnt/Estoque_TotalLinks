@@ -7,7 +7,9 @@ const {
   getMovimentacoesGerais,
   obterBadge,
   atualizarUltimoContadorPorNome,
-  getEquipamentosGeral
+  getEquipamentosGeral,
+  getEquipamentosComTecnico,
+  registrarDevolucao 
 } = require('./sheets.js');
 
 module.exports = async function handler(req, res) {
@@ -46,6 +48,10 @@ module.exports = async function handler(req, res) {
         result = await getMovimentacoesGerais();
       } else if (action === 'getEquipamentosGeral') {
         result = await getEquipamentosGeral();
+      } else if (action === 'getEquipamentosComTecnico') {
+        const { tecnico } = req.query;
+        if (!tecnico) return res.status(400).json({ success: false, error: 'Técnico não informado' });
+        result = await getEquipamentosComTecnico(tecnico);
       } else if (action === 'obterBadge') {
         if (!nome) {
           return res.status(400).json({ success: false, error: 'Nome não fornecido' });
@@ -73,6 +79,8 @@ module.exports = async function handler(req, res) {
         result = await registrarRetirada(data);
       } else if (data.action === 'registrarInclusao') {
         result = await registrarInclusao(data);
+      } else if (data.action === 'registrarDevolucao') {
+        result = await registrarDevolucao(data);
       } else if (data.action === 'atualizarVisualizacao') {
         const { nome, contadorGlobal } = data;
         if (!nome) {

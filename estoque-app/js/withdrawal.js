@@ -10,7 +10,7 @@ import { CATEGORIAS_COM_PATRIMONIO } from './config.js';
 // VARIÁVEIS DE CONTROLE
 // ============================================
 let currentFocus = -1;
-let itemSelecionado = null;      // guarda o objeto do item selecionado
+let itemSelecionado = null;
 
 // ============================================
 // FUNÇÕES AUXILIARES
@@ -315,6 +315,7 @@ async function confirmarRetirada() {
         }
         mostrarTela('withdrawScreen');
       } else {
+        limparFormularioRetirada();
         mostrarTela('mainScreen');
       }
     } else {

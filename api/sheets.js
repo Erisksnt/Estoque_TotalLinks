@@ -127,21 +127,27 @@ async function registrarRetirada(data) {
       resource: { values: [[novoEstoque]] }
     });
     
-    // 2. Registrar no log (LOG_RETIRADAS) – incluindo destino na observação
+    // 2. Registrar no log (LOG_RETIRADAS)
     const timestamp = new Date().toLocaleString('pt-BR', { timeZone: 'America/Sao_Paulo' });
-    let observacaoCompleta = observacao || '';
-    if (destino_tipo && destino_valor) {
-      observacaoCompleta += (observacaoCompleta ? ' | ' : '') + `Destino: ${destino_valor}`;
-    }
     const logRow = [
-      timestamp, categoria, itemNome, quantidade, unidade,
-      (patrimonios || []).join(', '), tecnico, observacaoCompleta,
-      estoqueAtual, novoEstoque
+      timestamp,
+      categoria,
+      itemNome,
+      quantidade,
+      unidade,
+      (patrimonios || []).join(', '),
+      tecnico,
+      destino_valor || '',
+      observacao || '',  
+      estoqueAtual,
+      novoEstoque
     ];
-    const logSheet = await getOrCreateLogSheet('LOG_RETIRADAS', [
+
+    await getOrCreateLogSheet('LOG_RETIRADAS', [
       "Timestamp", "Categoria", "Item", "Quantidade", "Unidade",
-      "Patrimônios", "Técnico", "Observação", "Estoque Anterior", "Estoque Novo"
+      "Patrimônios", "Técnico", "Destino", "Observação", "Estoque Anterior", "Estoque Novo"
     ]);
+
     await sheets.spreadsheets.values.append({
       spreadsheetId: SPREADSHEET_ID,
       range: 'LOG_RETIRADAS',
@@ -156,7 +162,7 @@ async function registrarRetirada(data) {
         itemNome, 
         patrimonioStr, 
         tecnico, 
-        observacaoCompleta,
+        observacao,     // ← ordem corrigida: observacao ANTES de destino_valor
         destino_valor
       );
     }
@@ -276,7 +282,6 @@ async function incrementarContadorGlobal() {
   return novo;
 }
 
-// Busca o último contador do técnico pelo NOME
 async function obterUltimoContadorPorNome(nome) {
   const sheets = await getSheet();
   const res = await sheets.spreadsheets.values.get({
@@ -294,7 +299,6 @@ async function obterUltimoContadorPorNome(nome) {
   return 0;
 }
 
-// Atualiza o último contador do técnico pelo NOME
 async function atualizarUltimoContadorPorNome(nome, novoValor) {
   const sheets = await getSheet();
   const res = await sheets.spreadsheets.values.get({
@@ -321,7 +325,6 @@ async function atualizarUltimoContadorPorNome(nome, novoValor) {
   }
 }
 
-// Função pública para obter badge usando NOME
 async function obterBadge(nome) {
   const global = await obterContadorGlobal();
   const ultimo = await obterUltimoContadorPorNome(nome);
@@ -426,81 +429,12 @@ async function getMovimentacoesGerais() {
   }
 }
 
-// Busca equipamentos do estoque + equipamentos com técnicos
-// Busca equipamentos do estoque + equipamentos com técnicos
-async function getEquipamentosGeral() {
-  try {
-    const sheets = await getSheet();
-    
-    // 1. Buscar estoque (planilha CVS) – apenas itens válidos
-    const estoqueRes = await sheets.spreadsheets.values.get({
-      spreadsheetId: SPREADSHEET_ID,
-      range: 'CVS'
-    });
-    let estoqueRows = estoqueRes.data.values || [];
-    // Filtra linhas com categoria e nome preenchidos (ignora cabeçalhos e linhas vazias)
-    estoqueRows = estoqueRows.filter(row => {
-      const cat = row[0] ? String(row[0]).trim() : '';
-      const item = row[1] ? String(row[1]).trim() : '';
-      return cat !== '' && cat.toLowerCase() !== 'categoria' && item !== '';
-    });
-    const estoqueItems = estoqueRows.map(row => ({
-      tipo: 'estoque',
-      categoria: row[0] || '',
-      item: row[1] || '',
-      unidade: row[2] || 'un',
-      quantidade: Number(row[3]) || 0,
-      minimo: Number(row[4]) || 0,
-      patrimonio: ''
-    }));
-    
-    // 2. Buscar equipamentos com técnicos (planilha EQUIPAMENTOS_COM_TECNICOS) – pode não existir
-    let equipamentosComTecnicos = [];
-    try {
-      const tecnicosRes = await sheets.spreadsheets.values.get({
-        spreadsheetId: SPREADSHEET_ID,
-        range: 'EQUIPAMENTOS_COM_TECNICOS'
-      });
-      const rows = tecnicosRes.data.values || [];
-      if (rows.length > 1) {
-        equipamentosComTecnicos = rows.slice(1)
-          .filter(row => row[6] !== 'SIM') // apenas não devolvidos
-          .map(row => ({
-            tipo: 'com_tecnico',
-            timestamp: row[0],
-            item: row[1],
-            patrimonio: row[2],
-            tecnico: row[3],
-            dataSaida: row[4],
-            observacao: row[5],
-            devolvido: row[6]
-          }));
-      }
-    } catch (err) {
-      // Se a planilha não existir, retorna array vazio (sem erro)
-      console.log('Planilha EQUIPAMENTOS_COM_TECNICOS ainda não foi criada.');
-    }
-    
-    return {
-      success: true,
-      data: {
-        estoque: estoqueItems,
-        comTecnicos: equipamentosComTecnicos
-      }
-    };
-  } catch (error) {
-    console.error('Erro ao buscar equipamentos gerais:', error);
-    return { success: false, error: error.message };
-  }
-}
-
 // ============================================
-// FUNÇÕES AUXILIARES DE LOG E EQUIPAMENTOS
+// FUNÇÕES PARA EQUIPAMENTOS (RETIRADA COM TÉCNICO E DEVOLUÇÃO)
 // ============================================
 
 async function getOrCreateLogSheet(sheetName, headers) {
   const sheets = await getSheet();
-  // Verificar se a aba existe
   const spreadsheet = await sheets.spreadsheets.get({
     spreadsheetId: SPREADSHEET_ID,
     includeGridData: false
@@ -509,7 +443,6 @@ async function getOrCreateLogSheet(sheetName, headers) {
     sheet => sheet.properties.title === sheetName
   );
   if (!sheetExists) {
-    // Criar a aba
     await sheets.spreadsheets.batchUpdate({
       spreadsheetId: SPREADSHEET_ID,
       resource: {
@@ -518,7 +451,6 @@ async function getOrCreateLogSheet(sheetName, headers) {
         }]
       }
     });
-    // Adicionar cabeçalho
     await sheets.spreadsheets.values.update({
       spreadsheetId: SPREADSHEET_ID,
       range: `${sheetName}!A1:${String.fromCharCode(64 + headers.length)}1`,
@@ -526,7 +458,7 @@ async function getOrCreateLogSheet(sheetName, headers) {
       resource: { values: [headers] }
     });
   }
-  return sheets; // ou retornar a sheet, mas não é necessário
+  return sheets;
 }
 
 async function adicionarEquipamentoComTecnico(itemNome, patrimonio, tecnico, observacao, destinoValor) {
@@ -550,13 +482,12 @@ async function adicionarEquipamentoComTecnico(itemNome, patrimonio, tecnico, obs
         }]
       }
     });
-    // Cabeçalho
     await sheets.spreadsheets.values.update({
       spreadsheetId: SPREADSHEET_ID,
-      range: `${sheetName}!A1:G1`,
+      range: `${sheetName}!A1:H1`,
       valueInputOption: 'RAW',
       resource: {
-        values: [['Timestamp', 'Item', 'Patrimônio', 'Técnico', 'Data Saída', 'Observação', 'Devolvido']]
+        values: [['Timestamp', 'Item', 'Patrimônio', 'Técnico', 'Destino', 'Data Saída', 'Observação', 'Devolvido']]
       }
     });
   }
@@ -574,12 +505,171 @@ async function adicionarEquipamentoComTecnico(itemNome, patrimonio, tecnico, obs
         itemNome,
         patrimonio,
         tecnico,
+        destinoValor,
         dataSaida,
-        observacao + (destinoValor ? ` | Destino: ${destinoValor}` : ''),
+        observacao,
         devolvido
       ]]
     }
   });
+}
+
+async function getEquipamentosComTecnico(tecnico) {
+  const sheets = await getSheet();
+  const sheetName = 'EQUIPAMENTOS_COM_TECNICOS';
+  try {
+    const res = await sheets.spreadsheets.values.get({
+      spreadsheetId: SPREADSHEET_ID,
+      range: sheetName
+    });
+    const rows = res.data.values || [];
+    if (rows.length <= 1) return [];
+
+    const pendentes = [];
+    for (let i = 1; i < rows.length; i++) {
+      const row = rows[i];
+      const tecnicoNaPlanilha = row[3] ? String(row[3]).trim() : '';
+      const devolvido = row[7] ? String(row[7]).trim() : '';
+      if (tecnicoNaPlanilha === tecnico && devolvido !== 'SIM') {
+        pendentes.push({
+          linhaIndex: i + 1,
+          timestamp: row[0],
+          item: row[1],
+          patrimonio: row[2],
+          tecnico: row[3],
+          destino: row[4],
+          dataSaida: row[5],
+          observacao: row[6],
+          devolvido: row[7]
+        });
+      }
+    }
+    return { success: true, data: pendentes };
+  } catch (err) {
+    console.error('Erro ao buscar equipamentos do técnico:', err);
+    return [];
+  }
+}
+
+async function getEquipamentosGeral() {
+  try {
+    const sheets = await getSheet();
+    const estoqueRes = await sheets.spreadsheets.values.get({
+      spreadsheetId: SPREADSHEET_ID,
+      range: 'CVS'
+    });
+    let estoqueRows = estoqueRes.data.values || [];
+    estoqueRows = estoqueRows.filter(row => {
+      const cat = row[0] ? String(row[0]).trim() : '';
+      const item = row[1] ? String(row[1]).trim() : '';
+      return cat !== '' && cat.toLowerCase() !== 'categoria' && item !== '';
+    });
+    const estoqueItems = estoqueRows.map(row => ({
+      tipo: 'estoque',
+      categoria: row[0] || '',
+      item: row[1] || '',
+      unidade: row[2] || 'un',
+      quantidade: Number(row[3]) || 0,
+      minimo: Number(row[4]) || 0,
+      patrimonio: ''
+    }));
+    
+    let equipamentosComTecnicos = [];
+    try {
+      const tecnicosRes = await sheets.spreadsheets.values.get({
+        spreadsheetId: SPREADSHEET_ID,
+        range: 'EQUIPAMENTOS_COM_TECNICOS'
+      });
+      const rows = tecnicosRes.data.values || [];
+      if (rows.length > 1) {
+        equipamentosComTecnicos = rows.slice(1)
+          .filter(row => row[7] !== 'SIM')
+          .map(row => ({
+            tipo: 'com_tecnico',
+            timestamp: row[0],
+            item: row[1],
+            patrimonio: row[2],
+            tecnico: row[3],
+            destino: row[4],
+            dataSaida: row[5],
+            observacao: row[6],
+            devolvido: row[7]
+          }));
+      }
+    } catch (err) {
+    }
+    
+    return {
+      success: true,
+      data: {
+        estoque: estoqueItems,
+        comTecnicos: equipamentosComTecnicos
+      }
+    };
+  } catch (error) {
+    console.error('Erro ao buscar equipamentos gerais:', error);
+    return { success: false, error: error.message };
+  }
+}
+
+async function registrarDevolucao(data) {
+  const { itemNome, quantidade, tecnico, observacao, patrimonio, linhaId } = data;
+  const sheets = await getSheet();
+
+  // 1. Marcar como devolvido na planilha de controle
+  await sheets.spreadsheets.values.update({
+    spreadsheetId: SPREADSHEET_ID,
+    range: `EQUIPAMENTOS_COM_TECNICOS!H${linhaId}`,
+    valueInputOption: 'RAW',
+    resource: { values: [['SIM']] }
+  });
+
+  // 2. Atualizar o estoque na planilha CVS e obter a categoria
+  const estoqueRes = await sheets.spreadsheets.values.get({
+    spreadsheetId: SPREADSHEET_ID,
+    range: 'CVS'
+  });
+  const rows = estoqueRes.data.values || [];
+  let linhaItem = -1;
+  let novaQuantidade = 0;
+  let quantidadeAtual = 0;
+  let categoria = '';
+
+  for (let i = 1; i < rows.length; i++) {
+    if (rows[i][1] === itemNome) {
+      linhaItem = i + 1;
+      categoria = rows[i][0] || '';          // ← obtém a categoria
+      quantidadeAtual = Number(rows[i][3]) || 0;
+      novaQuantidade = quantidadeAtual + quantidade;
+      await sheets.spreadsheets.values.update({
+        spreadsheetId: SPREADSHEET_ID,
+        range: `CVS!D${linhaItem}`,
+        valueInputOption: 'RAW',
+        resource: { values: [[novaQuantidade]] }
+      });
+      break;
+    }
+  }
+
+  if (linhaItem === -1) {
+    console.warn(`Item "${itemNome}" não encontrado na planilha CVS. Estoque não atualizado.`);
+  }
+
+  // 3. Registrar no log de inclusões (agora com categoria preenchida)
+  const timestamp = new Date().toLocaleString('pt-BR', { timeZone: 'America/Sao_Paulo' });
+  await sheets.spreadsheets.values.append({
+    spreadsheetId: SPREADSHEET_ID,
+    range: 'LOG_INCLUIDOS',
+    valueInputOption: 'RAW',
+    resource: {
+      values: [[
+        timestamp, categoria, itemNome, quantidade, 'un',
+        patrimonio, observacao, tecnico, quantidadeAtual, novaQuantidade
+      ]]
+    }
+  });
+
+  return { success: true, message: 'Equipamento devolvido com sucesso' };
 }
 
 module.exports = {
@@ -590,5 +680,7 @@ module.exports = {
   getMovimentacoesGerais,
   obterBadge,
   atualizarUltimoContadorPorNome,
-  getEquipamentosGeral
+  getEquipamentosGeral,
+  getEquipamentosComTecnico,
+  registrarDevolucao
 };

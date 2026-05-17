@@ -1,6 +1,6 @@
 // estoque-app/js/equipamentos.js
 import { mostrarTela } from './navigation.js';
-import { refreshCategoriasInclusao } from './inclusao.js';  // ← importar a função
+import { refreshCategoriasInclusao } from './inclusao.js';
 
 let dadosGlobais = { estoque: [], comTecnicos: [] };
 let abaAtiva = 'estoque';
@@ -57,7 +57,7 @@ function aplicarFiltroErenderizar() {
           <div>Patrimônio: ${eq.patrimonio || 'N/A'} | Técnico: ${eq.tecnico} | Saída: ${eq.dataSaida}</div>
           <div class="equipamento-status">Obs: ${eq.observacao || '-'}</div>
         </div>
-        <div class="equipamento-badge">🔧</div>
+        <div class="equipamento-badge"></div>
       </div>
     `).join('');
   }

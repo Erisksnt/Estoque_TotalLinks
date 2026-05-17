@@ -5,15 +5,8 @@ import { mostrarTela } from './navigation.js';
 import { API_URL } from './config.js';
 import { CATEGORIAS_COM_PATRIMONIO } from './config.js';
 
-// ============================================
-// VARIÁVEIS DE CONTROLE
-// ============================================
 let currentFocus = -1;
-let itemSelecionado = null;      // guarda o objeto do item selecionado
-
-// ============================================
-// FUNÇÕES AUXILIARES
-// ============================================
+let itemSelecionado = null;
 
 function renderizarPatrimoniosInclusao() {
   const qtdeValor = document.getElementById('qtdeInclusaoValor');
@@ -34,9 +27,7 @@ function renderizarPatrimoniosInclusao() {
 
 function itemPrecisaPatrimonio(item) {
   if (!item) return false;
-  const categoria = item[0];
-  const unidade = item[2];
-  return CATEGORIAS_COM_PATRIMONIO.includes(categoria) && unidade === 'un';
+  return CATEGORIAS_COM_PATRIMONIO.includes(item[0]) && item[2] === 'un';
 }
 
 function atualizarInterfacePorItem(item) {
@@ -84,11 +75,8 @@ function showItemBuscaSuggestions() {
       input.value = nomeItem;
       suggestionBox.style.display = 'none';
       const itemEncontrado = dadosEstoque.find(item => item[1] === nomeItem);
-      if (itemEncontrado) {
-        atualizarInterfacePorItem(itemEncontrado);
-      } else {
-        alert('Item não encontrado no estoque');
-      }
+      if (itemEncontrado) atualizarInterfacePorItem(itemEncontrado);
+      else alert('Item não encontrado no estoque');
     });
   });
 }
@@ -237,11 +225,9 @@ async function salvarInclusao() {
         observacao,
         patrimonio: patrimonios.join(', ')
       });
-
       await atualizarBadgeGlobal();
 
       const incluirMais = confirm(`✅ Item incluído com sucesso!\nItem: ${itemNome}\nQuantidade: ${quantidade}\n\nDeseja incluir outro item?`);
-
       if (incluirMais) {
         limparFormulario();
         const btn = document.getElementById('salvarInclusao');
@@ -264,10 +250,6 @@ async function salvarInclusao() {
     btnSalvar.disabled = false;
   }
 }
-
-// ============================================
-// FUNÇÕES EXPORTADAS
-// ============================================
 
 export function initInclusao() {
   initQuantidadeInclusao();
