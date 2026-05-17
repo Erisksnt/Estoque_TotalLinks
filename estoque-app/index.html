@@ -10,16 +10,25 @@
 </head>
 <body>
   <div id="app">
+    <div class="header">
+      <div class="header-left">
+        <button id="menuToggle" class="menu-toggle">☰</button>
+        <div class="sync-status">
+        </div>
+      </div>
+      <div class="header-right">
+        <img src="img/logo-menu.png" alt="Total Links" class="logo-header">
+      </div>
+    </div>
+    
     <!-- Tela de Login -->
     <div id="loginScreen" class="screen">
       <div class="login-container">
         <div class="login-card">
           <img src="img/logo-menu.png" alt="Total Links" class="logo-login">
           <p class="subtitle">Gestão de estoque</p>
-          
           <input type="password" id="senhaEquipe" placeholder="Senha da equipe" class="input">
           <input type="password" id="pinTecnico" placeholder="PIN do técnico" class="input" maxlength="4" inputmode="numeric">
-          
           <button id="btnLogin" class="btn btn-primary">Acessar</button>
           <div id="loginError" class="error"></div>
         </div>
@@ -27,21 +36,8 @@
     </div>
 
     <!-- Tela Principal -->
-    <div id="mainScreen" class="screen">
-      <div class="header">
-        <div>
-           <img src="img/logo-menu.png" alt="Total Links" class="logo-header">
-          <p class="greeting">Olá, <span id="tecnicoNome">Técnico</span></p>
-        </div>
-        <div class="header-right">
-          <div class="sync-status">
-            <span class="sync-dot online"></span>
-            <span class="sync-text">Online</span>
-          </div>
-          <button id="btnLogout" class="logout-btn">Sair</button>
-        </div>
-      </div>
-
+    <div id="mainScreen" class="screen">  
+      <button id="fabIncluir" class="fab" aria-label="Incluir item">+</button>
       <!-- Cards -->
       <div class="metrics-grid">
         <div class="metric-card">
@@ -53,25 +49,25 @@
           <div class="metric-label">Críticos</div>
         </div>
       </div>
-
+    
       <!-- Busca -->
       <div class="search-container">
-        <input type="text" id="searchInput" placeholder="Buscar item a ser retirado" class="search-input">
+        <input type="text" id="searchInput" placeholder="Buscar item..." class="search-input">
       </div>
-
+    
       <!-- Fluxo rápido -->
       <div class="section-header">
         <span>Fluxo rápido</span>
       </div>
       <div class="quick-grid" id="quickCategories"></div>
-
+    
       <!-- Estoque crítico -->
       <div class="section-header">
         <span>Estoque crítico</span>
         <span class="section-link" onclick="verTodosCriticos()">Ver todos</span>
       </div>
       <div id="criticalList" class="critical-list"></div>
-
+    
       <!-- Status -->
       <div class="sync-card">
         <div class="sync-header">
@@ -85,73 +81,68 @@
         <button id="syncNowBtn" class="btn-sync">Sincronizar agora</button>
       </div>
     </div>
-    
-     <!-- Bottom Navigation -->
-    <div class="bottom-nav">
-      <div class="nav-item active" data-nav="home">
-        <div class="nav-label">Início</div>
+
+    <!-- Menu lateral (sidebar) -->
+    <div id="sideMenu" class="side-menu">
+      <div class="side-menu-header">
+        <h3>Menu</h3>
+        <button id="closeMenu" class="close-menu">✕</button>
       </div>
-      <div class="nav-item" data-nav="search">
-        <div class="nav-label">Buscar</div>
-      </div>
-      <div class="nav-item" data-nav="recentes">
-        <div class="nav-label">Recentes</div>
-        <span id="badge-recentes" class="badge" style="display: none;">0</span>
-      </div>
-      <div class="nav-item" data-nav="criticos">
-        <div class="nav-label">Crítico</div>
-      </div>
-      <div class="nav-item" data-nav="equipamentos">
-        <div class="nav-label">Equipamentos</div>
+      <p class="greeting">Olá, <span id="tecnicoNome">Técnico</span></p>
+      <hr class="menu-divider">
+      <div class="side-menu-items">
+        <div class="side-item" data-nav="home">Início</div>
+        <div class="side-item" data-nav="search">Buscar</div>
+        <div class="side-item" data-nav="retirar">Retirar Equipamento</div>
+        <div class="side-item" data-nav="incluir">Incluir Equipamento</div>
+        <div class="side-item" data-nav="devolucao">Devolver Equipamento</div>
+        <div class="side-item" data-nav="recentes">
+          Movimentações Recentes
+          <span id="menuBadgeRecentes" class="badge-menu" style="display: none;">0</span>
+        </div>
+        <div class="side-item" data-nav="criticos">Itens Críticos</div>
+        <div class="side-item" data-nav="equipamentos">Estoque</div>
+        <div class="side-item" data-nav="logout">Sair</div>
       </div>
     </div>
 
     <!-- Tela de Itens por Categoria -->
     <div id="itemsScreen" class="screen">
       <div class="screen-header">
-        <button class="back-btn" onclick="mostrarTelaPrincipal()">← Voltar</button>
-        <h2 id="categoryTitle">Categoria</h2>
       </div>
       <div id="itemsContainer" class="items-list"></div>
     </div>
 
-  <!-- Tela de Equipamentos (somente admin) -->
-  <div id="equipamentosScreen" class="screen">
-    <div class="screen-header">
-      <button class="back-btn" id="backFromEquipamentos">← Voltar</button>
-      <h2>Controle de Equipamentos</h2>
-    </div>
-    <div class="equipamentos-container">
-
-      <!-- Campo de busca -->
-    <div class="equipamentos-search">
-      <input type="text" id="equipamentosSearchInput" class="input" placeholder="Buscar por item...">
-    </div>
-
-      <!-- Abas -->
-      <div class="equipamentos-tabs">
-        <button id="tabEstoqueBtn" class="tab-btn active">Estoque</button>
-        <button id="tabTecnicosBtn" class="tab-btn">Técnicos</button>
+    <!-- Tela de Equipamentos (somente admin) -->
+    <div id="equipamentosScreen" class="screen">
+      <div class="screen-header">
       </div>
-      <!-- Área da lista -->
-      <div id="equipamentosList" class="equipamentos-list"></div>
-    </div>
+      <div class="equipamentos-container">
+
+        <!-- Campo de busca -->
+      <div class="equipamentos-search">
+        <input type="text" id="equipamentosSearchInput" class="input" placeholder="Buscar por item...">
+      </div>
+
+        <!-- Abas -->
+        <div class="equipamentos-tabs">
+          <button id="tabEstoqueBtn" class="tab-btn active">Estoque</button>
+          <button id="tabTecnicosBtn" class="tab-btn">Técnicos</button>
+        </div>
+        <!-- Área da lista -->
+        <div id="equipamentosList" class="equipamentos-list"></div>
+      </div>
 
     <!-- Botão Incluir -->
     <button id="fabIncluir" class="fab" aria-label="Incluir item">+</button>
   </div>
 
   <!-- Tela de Retirada -->
-  <div id="withdrawScreen" class="screen">
-    <div class="screen-header">
-      <button class="back-btn" id="backFromWithdraw">← Voltar</button>
-      <h2>Retirar item</h2>
-    </div>
-  
+  <div id="withdrawScreen" class="screen">  
     <div class="form-container">
       <!-- Campo de busca de item -->
       <div class="form-group autocomplete-container">
-        <label>Buscar Item</label>
+        <label>Buscar item a ser Retirado do Estoque</label>
         <input type="text" id="itemBuscaRetirada" class="input" placeholder="Digite o nome do item" autocomplete="off">
         <div id="itemBuscaRetiradaAutocompleteList" class="autocomplete-items"></div>
       </div>
@@ -180,7 +171,7 @@
       </div>
 
       <div class="form-group">
-        <label>Destino *</label>
+        <label>Destino</label>
         <select id="destinoTipo" class="input" required>
           <option value="">Selecione...</option>
           <option value="cliente">Cliente</option>
@@ -206,10 +197,6 @@
 
     <!-- Tela de Busca Global -->
     <div id="searchScreen" class="screen">
-      <div class="screen-header">
-        <button class="back-btn" onclick="mostrarTelaPrincipal()">← Voltar</button>
-        <h2>Buscar item</h2>
-      </div>
       <div class="search-container-full">
         <input type="text" id="globalSearchInput" placeholder="Nome do item..." class="search-input-full">
       </div>
@@ -218,33 +205,20 @@
 
     <!-- Tela de Retiradas Recentes -->
     <div id="recentesScreen" class="screen">
-      <div class="screen-header">
-        <button class="back-btn" onclick="mostrarTelaPrincipal()">← Voltar</button>
-        <h2>Recentes</h2>
-      </div>
       <div id="recentesList" class="recentes-list"></div>
     </div>
 
     <!-- Tela de Todos os Críticos -->
     <div id="criticosScreen" class="screen">
-      <div class="screen-header">
-        <button class="back-btn" onclick="mostrarTelaPrincipal()">← Voltar</button>
-        <h2>Todos os críticos</h2>
-      </div>
       <div id="criticosList" class="criticos-list"></div>
     </div>
     
-    <!-- Tela de Inclusão de Itens -->
+    <!-- Tela de Inclusão de Itens (somente compra) -->
     <div id="inclusaoScreen" class="screen">
-      <div class="screen-header">
-        <button class="back-btn" id="backFromInclusao">← Voltar</button>
-        <h2>Inclusão</h2>
-      </div>
-    
       <div class="form-container">
         <!-- Campo de busca de item (autocomplete em todo o estoque) -->
         <div class="form-group autocomplete-container">
-          <label>Buscar Item</label>
+          <label>Buscar item a ser Incluído no Estoque</label>
           <input type="text" id="itemBuscaInclusao" class="input" placeholder="Digite o nome do item" autocomplete="off">
           <div id="itemBuscaAutocompleteList" class="autocomplete-items"></div>
         </div>
@@ -279,6 +253,23 @@
       
         <div class="form-buttons">
           <button id="salvarInclusao" class="btn-confirm">Confirmar inclusão</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tela de Devolução de Equipamentos -->
+    <div id="devolucaoScreen" class="screen">
+      <div class="form-container">
+        <div class="form-group">
+          <label>Selecione o equipamento a devolver</label>
+          <select id="selectEquipamentoDevolucao" class="input" size="5"></select>
+        </div>
+        <div class="form-group">
+          <label>Observação</label>
+          <textarea id="obsDevolucao" class="obs-input" rows="2" placeholder="Motivo da devolução..."></textarea>
+        </div>
+        <div class="form-buttons">
+          <button id="btnConfirmarDevolucao" class="btn-confirm">Confirmar devolução</button>
         </div>
       </div>
     </div>
