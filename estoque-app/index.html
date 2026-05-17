@@ -92,16 +92,13 @@
       <hr class="menu-divider">
       <div class="side-menu-items">
         <div class="side-item" data-nav="home">Início</div>
-        <div class="side-item" data-nav="search">Buscar</div>
-        <div class="side-item" data-nav="retirar">Retirar Equipamento</div>
-        <div class="side-item" data-nav="incluir">Incluir Equipamento</div>
-        <div class="side-item" data-nav="devolucao">Devolver Equipamento</div>
-        <div class="side-item" data-nav="recentes">
-          Movimentações Recentes
-          <span id="menuBadgeRecentes" class="badge-menu" style="display: none;">0</span>
-        </div>
-        <div class="side-item" data-nav="criticos">Itens Críticos</div>
         <div class="side-item" data-nav="equipamentos">Estoque</div>
+        <div class="side-item" data-nav="incluir">Incluir Equipamento</div>
+        <div class="side-item" data-nav="retirar">Retirar Equipamento</div>
+        <div class="side-item" data-nav="devolucao">Devolver Equipamento</div>
+        <div class="side-item" data-nav="recentes">Movimentações Recentes<span id="menuBadgeRecentes" class="badge-menu" style="display: none;">0</span></div>
+        <div class="side-item" data-nav="solicitacao">Solicitar Compra</div>
+        <div class="side-item" data-nav="criticos">Itens Críticos</div>
         <div class="side-item" data-nav="logout">Sair</div>
       </div>
     </div>
@@ -270,6 +267,23 @@
         </div>
         <div class="form-buttons">
           <button id="btnConfirmarDevolucao" class="btn-confirm">Confirmar devolução</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tela de Solicitação de Compra -->
+    <div id="solicitacaoScreen" class="screen">
+      <div class="form-container">
+        <div class="form-group">
+          <label>Itens (descreva os itens faltantes)</label>
+          <textarea id="itensSolicitacao" class="input" rows="4" placeholder="Exemplo:&#10;1 Rádio Ubiquiti Rocket M5&#10;2 Fontes PoE 48V&#10;1 Cabo de rede CAT6"></textarea>
+        </div>
+        <div class="form-group">
+          <label>Observação (opcional)</label>
+          <textarea id="obsSolicitacao" class="obs-input" rows="2" placeholder="Motivo da solicitação, urgência..."></textarea>
+        </div>
+        <div class="form-buttons">
+          <button id="btnEnviarSolicitacao" class="btn-confirm">Enviar Solicitação</button>
         </div>
       </div>
     </div>

@@ -672,6 +672,67 @@ async function registrarDevolucao(data) {
   return { success: true, message: 'Equipamento devolvido com sucesso' };
 }
 
+async function getOrCreateSolicitacoesSheet() {
+  const sheets = await getSheet();
+  const sheetName = 'SOLICITACOES_COMPRA';
+  const spreadsheet = await sheets.spreadsheets.get({
+    spreadsheetId: SPREADSHEET_ID,
+    includeGridData: false
+  });
+  const sheetExists = spreadsheet.data.sheets.some(s => s.properties.title === sheetName);
+  if (!sheetExists) {
+    await sheets.spreadsheets.batchUpdate({
+      spreadsheetId: SPREADSHEET_ID,
+      resource: {
+        requests: [{ addSheet: { properties: { title: sheetName } } }]
+      }
+    });
+    await sheets.spreadsheets.values.update({
+      spreadsheetId: SPREADSHEET_ID,
+      range: `${sheetName}!A1:E1`,
+      valueInputOption: 'RAW',
+      resource: { values: [['Timestamp', 'Técnico', 'Itens', 'Observação', 'Status']] }
+    });
+  }
+}
+
+async function registrarSolicitacao(data) {
+  const { tecnico, itens, observacao } = data;
+  const sheets = await getSheet();
+  const sheetName = 'SOLICITACOES_COMPRA';
+  
+  // Garantir que a aba existe
+  const spreadsheet = await sheets.spreadsheets.get({
+    spreadsheetId: SPREADSHEET_ID,
+    includeGridData: false
+  });
+  const sheetExists = spreadsheet.data.sheets.some(s => s.properties.title === sheetName);
+  if (!sheetExists) {
+    await sheets.spreadsheets.batchUpdate({
+      spreadsheetId: SPREADSHEET_ID,
+      resource: {
+        requests: [{ addSheet: { properties: { title: sheetName } } }]
+      }
+    });
+    await sheets.spreadsheets.values.update({
+      spreadsheetId: SPREADSHEET_ID,
+      range: `${sheetName}!A1:E1`,
+      valueInputOption: 'RAW',
+      resource: { values: [['Timestamp', 'Técnico', 'Itens', 'Observação', 'Status']] }
+    });
+  }
+  
+  const timestamp = new Date().toLocaleString('pt-BR', { timeZone: 'America/Sao_Paulo' });
+  const status = 'Pendente';
+  await sheets.spreadsheets.values.append({
+    spreadsheetId: SPREADSHEET_ID,
+    range: sheetName,
+    valueInputOption: 'RAW',
+    resource: { values: [[timestamp, tecnico, itens, observacao, status]] }
+  });
+  return { success: true, message: 'Solicitação registrada com sucesso' };
+}
+
 module.exports = {
   getEstoque,
   registrarRetirada,
@@ -682,5 +743,6 @@ module.exports = {
   atualizarUltimoContadorPorNome,
   getEquipamentosGeral,
   getEquipamentosComTecnico,
-  registrarDevolucao
+  registrarDevolucao,
+  registrarSolicitacao
 };

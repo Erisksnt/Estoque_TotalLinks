@@ -104,6 +104,8 @@ export function atualizarNavegacao() {
         }
       } else if (navTela === 'inclusao') {
         mostrarTela('inclusaoScreen');
+      } else if (navTela === 'solicitacao') {
+        mostrarTela('solicitacaoScreen');
       }
     });
   });
@@ -125,6 +127,9 @@ export function mostrarTelaPrincipal() {
   const recentesScreen = document.getElementById('recentesScreen');
   const criticosScreen = document.getElementById('criticosScreen');
   const inclusaoScreen = document.getElementById('inclusaoScreen');
+  const devolucaoScreen = document.getElementById('devolucaoScreen');
+  const solicitacaoScreen = document.getElementById('solicitacaoScreen');
+  const equipamentosScreen = document.getElementById('equipamentosScreen');
   if (mainScreen) mainScreen.classList.add('active');
   if (loginScreen) loginScreen.classList.remove('active');
   if (itemsScreen) itemsScreen.classList.remove('active');
@@ -133,6 +138,9 @@ export function mostrarTelaPrincipal() {
   if (recentesScreen) recentesScreen.classList.remove('active');
   if (criticosScreen) criticosScreen.classList.remove('active');
   if (inclusaoScreen) inclusaoScreen.classList.remove('active');
+  if (devolucaoScreen) devolucaoScreen.classList.remove('active');
+  if (solicitacaoScreen) solicitacaoScreen.classList.remove('active');
+  if (equipamentosScreen) equipamentosScreen.classList.remove('active');
   
   // Mostrar menu toggle e sidebar
   const menuToggle = document.getElementById('menuToggle');
@@ -159,7 +167,7 @@ export function mostrarTelaPrincipal() {
 }
 
 export async function mostrarTela(telaId) {
-  const telas = ['mainScreen', 'loginScreen', 'itemsScreen', 'withdrawScreen', 'searchScreen', 'recentesScreen', 'criticosScreen', 'inclusaoScreen', 'devolucaoScreen', 'equipamentosScreen'];
+  const telas = ['mainScreen', 'loginScreen', 'itemsScreen', 'withdrawScreen', 'searchScreen', 'recentesScreen', 'criticosScreen', 'inclusaoScreen', 'devolucaoScreen', 'solicitacaoScreen', 'equipamentosScreen'];
   telas.forEach(tela => {
     const el = document.getElementById(tela);
     if (el) el.classList.remove('active');
@@ -195,7 +203,7 @@ export async function mostrarTela(telaId) {
     if (telaId === 'loginScreen') {
       header.style.display = 'none';
     } else {
-      header.style.display = '';
+      header.style.display = 'flex';
     }
   }
   

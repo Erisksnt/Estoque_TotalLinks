@@ -49,9 +49,6 @@ export function initMenu() {
         case 'home':
           mostrarTelaPrincipal();
           break;
-        case 'search':
-          mostrarTela('searchScreen');
-          break;
         case 'recentes':
           await carregarRecentes();
           mostrarTela('recentesScreen');
@@ -71,6 +68,9 @@ export function initMenu() {
           break;
         case 'devolucao':
           mostrarTela('devolucaoScreen');
+          break;
+        case 'solicitacao':
+          mostrarTela('solicitacaoScreen');
           break;
         case 'logout':
           setTecnicoAtual(null);
