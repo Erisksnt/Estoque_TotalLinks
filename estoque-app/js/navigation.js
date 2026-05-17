@@ -5,6 +5,7 @@ import { carregarRecentes } from './recentes.js';
 import { verTodosCriticos } from './categories.js';
 import { carregarMetricas, carregarCategoriasRapidas, carregarListaCritica } from './ui-helpers.js';
 import { carregarEquipamentos } from './equipamentos.js';
+import { carregarEquipamentosDevolucao } from './devolucao.js';
 
 // Atualiza o ícone ativo do bottom navigation
 function atualizarBottomNavActive(telaId) {
@@ -17,7 +18,8 @@ function atualizarBottomNavActive(telaId) {
     'recentesScreen': 'recentes',
     'criticosScreen': 'criticos',
     'equipamentosScreen': 'equipamentos',
-    'inclusaoScreen': 'inclusao'
+    'inclusaoScreen': 'inclusao',
+    'devolucaoScreen': 'devolucao'
   };
   const navTarget = mapa[telaId];
   if (navTarget) {
@@ -54,7 +56,7 @@ function aplicarAdaptacaoPorPerfil() {
     document.body.classList.remove('gerente');
   }
   
-  // Aba "Crítico" – apenas para gerente
+  // Aba "Equipamentos"
   const navEquipamentos = document.querySelector('.nav-item[data-nav="equipamentos"]');
   if (navEquipamentos) {
     if (perfilAtual === 'adm' || perfilAtual === 'gerente') {
@@ -132,6 +134,15 @@ export function mostrarTelaPrincipal() {
   if (criticosScreen) criticosScreen.classList.remove('active');
   if (inclusaoScreen) inclusaoScreen.classList.remove('active');
   
+  // Mostrar menu toggle e sidebar
+  const menuToggle = document.getElementById('menuToggle');
+  const sideMenu = document.getElementById('sideMenu');
+  if (menuToggle) menuToggle.style.display = 'block';
+  if (sideMenu) sideMenu.style.display = 'block';
+  
+  const header = document.querySelector('.header');
+  if (header) header.style.display = 'flex';
+  
   atualizarBottomNavActive('mainScreen');
   const bottomNav = document.querySelector('.bottom-nav');
   if (bottomNav) {
@@ -143,12 +154,12 @@ export function mostrarTelaPrincipal() {
   carregarCategoriasRapidas();
   carregarListaCritica();
   
-  // Atualiza a navegação (eventos de clique) APÓS a tela estar carregada
+  // Atualiza a navegação
   atualizarNavegacao();
 }
 
 export async function mostrarTela(telaId) {
-  const telas = ['mainScreen', 'loginScreen', 'itemsScreen', 'withdrawScreen', 'searchScreen', 'recentesScreen', 'criticosScreen', 'inclusaoScreen', 'equipamentosScreen'];
+  const telas = ['mainScreen', 'loginScreen', 'itemsScreen', 'withdrawScreen', 'searchScreen', 'recentesScreen', 'criticosScreen', 'inclusaoScreen', 'devolucaoScreen', 'equipamentosScreen'];
   telas.forEach(tela => {
     const el = document.getElementById(tela);
     if (el) el.classList.remove('active');
@@ -162,16 +173,32 @@ export async function mostrarTela(telaId) {
     if (badge) badge.style.display = 'none';
     marcarRecentesComoVistos().catch(console.error);
   }
-  
-  const bottomNav = document.querySelector('.bottom-nav');
-  if (bottomNav) {
-    if (telaId === 'loginScreen') {
-      bottomNav.style.display = 'none';
-    } else {
-      bottomNav.style.display = 'flex';
-      bottomNav.style.visibility = 'visible';
+
+  if (telaId === 'devolucaoScreen') {
+    if (typeof carregarEquipamentosDevolucao === 'function') {
+      carregarEquipamentosDevolucao();
     }
   }
+  const menuToggle = document.getElementById('menuToggle');
+  const sideMenu = document.getElementById('sideMenu');
+  if (telaId === 'loginScreen') {
+    if (menuToggle) menuToggle.style.display = 'none';
+    if (sideMenu) sideMenu.style.display = 'none';
+  } else {
+    if (menuToggle) menuToggle.style.display = 'block';
+    if (sideMenu) sideMenu.style.display = 'block';
+  }
+  
+  // Controlar header
+  const header = document.querySelector('.header');
+  if (header) {
+    if (telaId === 'loginScreen') {
+      header.style.display = 'none';
+    } else {
+      header.style.display = '';
+    }
+  }
+  
   if (telaId === 'loginScreen') {
     const btnLogin = document.getElementById('btnLogin');
     if (btnLogin) {
@@ -209,6 +236,6 @@ export function initNavigation() {
   }
   // Atualiza o badge global ao carregar a navegação
   atualizarBadgeGlobal().catch(console.error);
-  // Força a adaptação do perfil (para exibir a aba Equipamentos se for adm)
+  // Força a adaptação do perfil
   aplicarAdaptacaoPorPerfil();
 }

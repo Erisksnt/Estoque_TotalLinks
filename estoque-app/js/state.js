@@ -18,7 +18,7 @@ if (savedTecnico) {
   perfilAtual = savedPerfil || 'tecnico';
 }
 
-// Carrega as movimentações do localStorage ao iniciar (ainda pode ser útil)
+// Carrega as movimentações do localStorage ao iniciar
 try {
   const savedMovimentacoes = localStorage.getItem('movimentacoesRecentes');
   if (savedMovimentacoes) {
@@ -74,7 +74,7 @@ export function setTelaAnterior(tela) {
 }
 
 // ============================================
-// FUNÇÕES DE MOVIMENTAÇÕES (locais) – mantidas para compatibilidade
+// FUNÇÕES DE MOVIMENTAÇÕES (locais)
 // ============================================
 
 export function getMovimentacoesRecentes() {
@@ -98,21 +98,14 @@ export function addMovimentacaoRecente(movimentacao) {
 // ============================================
 // BADGE GLOBAL (usando NOME do técnico)
 // ============================================
-
-// Armazena o último contador global conhecido (para evitar chamadas desnecessárias)
 let ultimoContadorConhecido = 0;
 
-// Busca o badge diretamente do backend usando o NOME
 async function buscarBadge() {
   if (!tecnicoAtual) return 0;
   try {
-    // Agora usa 'nome' na query string
     const response = await fetch(`/api/proxy?action=obterBadge&nome=${encodeURIComponent(tecnicoAtual)}`);
     const data = await response.json();
-    if (data.badge !== undefined) {
-      ultimoContadorConhecido = data.global;
-      return data.badge;
-    }
+    if (data.badge !== undefined) return data.badge;
     return 0;
   } catch (error) {
     console.error('Erro ao buscar badge:', error);
@@ -121,36 +114,33 @@ async function buscarBadge() {
 }
 
 export async function atualizarBadgeGlobal() {
-  const badgeElement = document.getElementById('badge-recentes');
-  if (!badgeElement) return;
-  const count = await buscarBadge();
-  if (count > 0) {
-    badgeElement.textContent = count > 9 ? '9+' : count;
-    badgeElement.style.display = 'flex';
-  } else {
-    badgeElement.style.display = 'none';
+  const menuBadge = document.getElementById('menuBadgeRecentes');
+  if (menuBadge) {
+    const count = await buscarBadge();
+    if (count > 0) {
+      menuBadge.textContent = count > 9 ? '9+' : count;
+      menuBadge.style.display = 'inline-block';
+    } else {
+      menuBadge.style.display = 'none';
+    }
   }
 }
 
-// Marca as movimentações como vistas (atualiza o último contador do técnico no backend)
 export async function marcarRecentesComoVistos() {
   if (!tecnicoAtual) return;
   try {
-    // Obtém o contador global atual (usando nome)
     const response = await fetch(`/api/proxy?action=obterBadge&nome=${encodeURIComponent(tecnicoAtual)}`);
     const data = await response.json();
     if (data.global !== undefined) {
-      // Envia a atualização para o backend (agora com campo 'nome')
       await fetch('/api/proxy', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           action: 'atualizarVisualizacao',
-          nome: tecnicoAtual,           // ← campo 'nome' (não 'pin')
+          nome: tecnicoAtual,
           contadorGlobal: data.global
         })
       });
-      // Atualiza o badge após marcar como visto
       await atualizarBadgeGlobal();
     }
   } catch (error) {

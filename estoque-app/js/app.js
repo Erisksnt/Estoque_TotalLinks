@@ -10,6 +10,8 @@ import { abrirCategoria, verTodosCriticos } from './categories.js';
 import { tecnicoAtual, atualizarBadgeGlobal } from './state.js';
 import { carregarEstoque } from './cache.js';
 import { initEquipamentos } from './equipamentos.js';
+import { initMenu } from './menu.js';
+import { initDevolucao } from './devolucao.js';
 
 // Exporta funções globais para os onclick do HTML
 window.abrirCategoria = abrirCategoria;
@@ -28,6 +30,8 @@ document.addEventListener('DOMContentLoaded', async () => {
   initSyncButton();
   initInclusao();
   initEquipamentos();
+  initMenu();
+  initDevolucao();
 
   // Verifica se há um técnico logado na sessão
   if (tecnicoAtual) {
@@ -51,7 +55,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     });
   }
 
-  // 🔁 Atualiza o badge automaticamente a cada 10 minutos (para usuários logados)
+  // Atualiza o badge automaticamente a cada 10 minutos (para usuários logados)
   setInterval(() => {
     if (tecnicoAtual) {
       atualizarBadgeGlobal().catch(console.error);

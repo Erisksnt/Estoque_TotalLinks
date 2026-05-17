@@ -1,7 +1,8 @@
 import { setTecnicoAtual } from './state.js';
 import { carregarEstoque } from './cache.js';
 import { mostrarTela, mostrarTelaPrincipal } from './navigation.js';
-import { atualizarBadgeGlobal } from './state.js';   // ← adicionar
+import { atualizarBadgeGlobal } from './state.js';
+import { atualizarVisibilidadeMenu } from './menu.js';
 
 export function initLogin() {
   const btnLogin = document.getElementById('btnLogin');
@@ -25,6 +26,7 @@ export function initLogin() {
 
         if (data.sucesso) {
           setTecnicoAtual(data.tecnicoNome, data.perfil);
+          atualizarVisibilidadeMenu();
           await atualizarBadgeGlobal();
           const nomeSpan = document.getElementById('tecnicoNome');
           if (nomeSpan) nomeSpan.textContent = data.tecnicoNome;
