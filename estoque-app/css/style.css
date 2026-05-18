@@ -79,20 +79,76 @@
     display: block;
   }
 
-  /* ============================================
-     TELA DE EQUIPAMENTOS
-     ============================================ */
+   /* ============================================
+       TELA DE EQUIPAMENTOS
+       ============================================ */
   
+  .equipamentos-container {
+    padding: 20px;
+  }
+  
+  /* Campo de busca */
+  .equipamentos-search {
+    margin-bottom: 20px;
+  }
+  
+  #equipamentosSearchInput {
+    width: 100%;
+    padding: 12px 16px;
+    border: 1px solid #E2E8F0;
+    border-radius: 12px;
+    font-size: 16px;
+    background: white;
+    transition: all 0.2s;
+    box-sizing: border-box;
+  }
+  
+  #equipamentosSearchInput:focus {
+    outline: none;
+    border-color: #0066CC;
+    box-shadow: 0 0 0 3px rgba(0,102,204,0.1);
+  }
+  
+  /* Abas */
+  .equipamentos-tabs {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0;
+    margin-bottom: 20px;
+    background: #f1f5f9;
+    border-radius: 50px;
+    padding: 4px;
+  }
+  
+  .tab-btn {
+    background: transparent;
+    border: none;
+    padding: 12px 0;
+    font-size: 16px;
+    font-weight: 500;
+    color: #475569;
+    cursor: pointer;
+    transition: all 0.2s;
+    border-radius: 50px;
+    text-align: center;
+  }
+  
+  .tab-btn.active {
+    color: #0066CC;
+    background: #F0F9FF;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+  }
+  
+  /* Lista de equipamentos */
   .equipamentos-list {
-    padding: 0 20px;
-    margin-top: 10px;
+    margin-top: 0;
   }
   
   .equipamento-item {
     background: white;
     border: 1px solid #E2E8F0;
     border-radius: 12px;
-    padding: 0 20px;
+    padding: 14px 16px;
     margin-bottom: 8px;
     display: flex;
     justify-content: space-between;
@@ -100,7 +156,6 @@
   }
   
   .equipamento-info {
-    padding: 0 20px;
     font-size: 14px;
     flex: 1;
   }
@@ -121,63 +176,18 @@
     font-size: 24px;
     opacity: 0.7;
   }
-
-  .equipamentos-tabs {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 0;
-    margin: 20px 0;
-    background: #f1f5f9;
-    border-radius: 50px;
-    padding: 4px;
-  }
   
-  .tab-btn {
-    background: transparent;
-    border: none;
-    padding: 12px 0px;
-    font-size: 16px;
-    font-weight: 500;
-    color: #475569;
-    cursor: pointer;
-    transition: all 0.2s;
-    border-radius: 50px;
-    text-align: center;
+  /* Ajuste para telas pequenas */
+  @media (max-width: 600px) {
+    .equipamento-item {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 8px;
+    }
+    .equipamento-badge {
+      align-self: flex-end;
+    }
   }
-
-  .tab-btn.active {
-    color: #0066CC;
-    background: #F0F9FF;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-  }
-
-  .equipamentos-search {
-    margin-bottom: 0px;
-    margin-top: 20px;
-  }
-  
-  #equipamentosSearchInput {
-    width: 100%;
-    padding: 12px 16px;
-    border: 1px solid #E2E8F0;
-    border-radius: 12px;
-    font-size: 16px;
-    background: white;
-    transition: all 0.2s;
-    box-sizing: border-box;
-  }
-  
-  #equipamentosSearchInput:focus {
-    outline: none;
-    border-color: #0066CC;
-    box-shadow: 0 0 0 3px rgba(0,102,204,0.1);
-  }
-
-  #selectEquipamentoDevolucao[multiple] {
-    height: auto;
-    min-height: 120px;
-  }
-  
   /* ============================================
      METRIC CARDS
      ============================================ */
