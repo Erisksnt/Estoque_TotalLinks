@@ -45,6 +45,11 @@ function aplicarAdaptacaoPorPerfil() {
   const sectionLink = document.querySelector('.section-header .section-link');
   if (sectionLink) sectionLink.style.display = isGerente ? '' : 'none';
   
+  const criticalSection = document.getElementById('criticalSection');
+   if (criticalSection) {
+     criticalSection.style.display = isGerente ? '' : 'none';
+   }
+
   const syncCard = document.querySelector('.sync-card');
   if (syncCard) syncCard.style.marginTop = isGerente ? '0' : '20px';
   
