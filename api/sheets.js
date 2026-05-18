@@ -733,6 +733,72 @@ async function registrarSolicitacao(data) {
   return { success: true, message: 'Solicitação registrada com sucesso' };
 }
 
+async function registrarDevolucaoMultipla(data) {
+  const { equipamentos, observacao, tecnico } = data;
+  const sheets = await getSheet();
+  let devolvidos = 0;
+  let erros = [];
+
+  for (const eq of equipamentos) {
+    try {
+      // 1. Marcar como devolvido na planilha de controle
+      await sheets.spreadsheets.values.update({
+        spreadsheetId: SPREADSHEET_ID,
+        range: `EQUIPAMENTOS_COM_TECNICOS!H${eq.linhaId}`,
+        valueInputOption: 'RAW',
+        resource: { values: [['SIM']] }
+      });
+
+      // 2. Atualizar o estoque na planilha CVS
+      const estoqueRes = await sheets.spreadsheets.values.get({
+        spreadsheetId: SPREADSHEET_ID,
+        range: 'CVS'
+      });
+      const rows = estoqueRes.data.values || [];
+      let linhaItem = -1;
+      let categoria = '';
+      for (let i = 1; i < rows.length; i++) {
+        if (rows[i][1] === eq.itemNome) {
+          linhaItem = i + 1;
+          categoria = rows[i][0] || '';
+          const quantidadeAtual = Number(rows[i][3]) || 0;
+          const novaQuantidade = quantidadeAtual + 1; // sempre 1 unidade por equipamento
+          await sheets.spreadsheets.values.update({
+            spreadsheetId: SPREADSHEET_ID,
+            range: `CVS!D${linhaItem}`,
+            valueInputOption: 'RAW',
+            resource: { values: [[novaQuantidade]] }
+          });
+          break;
+        }
+      }
+
+      // 3. Registrar no log de inclusões (opcional)
+      const timestamp = new Date().toLocaleString('pt-BR', { timeZone: 'America/Sao_Paulo' });
+      await sheets.spreadsheets.values.append({
+        spreadsheetId: SPREADSHEET_ID,
+        range: 'LOG_INCLUIDOS',
+        valueInputOption: 'RAW',
+        resource: {
+          values: [[
+            timestamp, categoria, eq.itemNome, 1, 'un',
+            eq.patrimonio, observacao, tecnico, 0, 0
+          ]]
+        }
+      });
+      devolvidos++;
+    } catch (err) {
+      erros.push(eq.itemNome);
+      console.error(`Erro ao devolver ${eq.itemNome}:`, err);
+    }
+  }
+
+  if (erros.length > 0) {
+    return { success: false, error: `Falha ao devolver: ${erros.join(', ')}` };
+  }
+  return { success: true, devolvidos };
+}
+
 module.exports = {
   getEstoque,
   registrarRetirada,
@@ -744,5 +810,6 @@ module.exports = {
   getEquipamentosGeral,
   getEquipamentosComTecnico,
   registrarDevolucao,
+  registrarDevolucaoMultipla,
   registrarSolicitacao
 };

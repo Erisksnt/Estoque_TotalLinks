@@ -82,9 +82,6 @@
   /* ============================================
      TELA DE EQUIPAMENTOS
      ============================================ */
-  .equipamentos-container {
-    padding: 20px;
-  }
   
   .equipamentos-list {
     margin-top: 10px;
@@ -176,6 +173,11 @@
     outline: none;
     border-color: #0066CC;
     box-shadow: 0 0 0 3px rgba(0,102,204,0.1);
+  }
+
+  #selectEquipamentoDevolucao[multiple] {
+    height: auto;
+    min-height: 120px;
   }
   
   /* ============================================
@@ -313,7 +315,6 @@
 
   .screen.active {
   display: block;
-  padding-top: 80px;
   }
 
   .screen:not(#loginScreen) {

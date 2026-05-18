@@ -5,7 +5,7 @@ import { carregarRecentes } from './recentes.js';
 import { verTodosCriticos } from './categories.js';
 import { carregarMetricas, carregarCategoriasRapidas, carregarListaCritica } from './ui-helpers.js';
 import { carregarEquipamentos } from './equipamentos.js';
-import { carregarEquipamentosDevolucao } from './devolucao.js';
+import { carregarEquipamentos as carregarEquipamentosDevolucao } from './devolucao.js';
 
 // Atualiza o ícone ativo do bottom navigation
 function atualizarBottomNavActive(telaId) {

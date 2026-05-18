@@ -38,12 +38,12 @@ export function initMenu() {
   // Aplica a visibilidade inicial
   atualizarVisibilidadeMenu();
 
+  // Configurar eventos de clique para todos os itens (sem filtrar por display)
   const sideItems = document.querySelectorAll('.side-item');
   sideItems.forEach(item => {
-    // Ignora se o item estiver oculto
-    if (item.style.display === 'none') return;
-
-    item.addEventListener('click', async (e) => {
+    // Remove eventos antigos para evitar duplicação (clonagem não é necessária)
+    item.removeEventListener('click', item._listener);
+    const listener = async (e) => {
       const tela = item.dataset.nav;
       switch(tela) {
         case 'home':
@@ -81,6 +81,8 @@ export function initMenu() {
           break;
       }
       closeMenu();
-    });
+    };
+    item.addEventListener('click', listener);
+    item._listener = listener; // guarda referência para remoção futura
   });
 }

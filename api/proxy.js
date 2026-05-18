@@ -10,7 +10,8 @@ const {
   getEquipamentosGeral,
   getEquipamentosComTecnico,
   registrarDevolucao,
-  registrarSolicitacao
+  registrarSolicitacao,
+  registrarDevolucaoMultipla
 } = require('./sheets.js');
 
 module.exports = async function handler(req, res) {
@@ -84,6 +85,8 @@ module.exports = async function handler(req, res) {
         result = await registrarDevolucao(data);
       } else if (data.action === 'registrarSolicitacao') {
         result = await registrarSolicitacao(data);
+      } else if (data.action === 'registrarDevolucaoMultipla') {
+        result = await registrarDevolucaoMultipla(data);
       } else if (data.action === 'atualizarVisualizacao') {
         const { nome, contadorGlobal } = data;
         if (!nome) {
