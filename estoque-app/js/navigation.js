@@ -7,27 +7,6 @@ import { carregarMetricas, carregarCategoriasRapidas, carregarListaCritica } fro
 import { carregarEquipamentos } from './equipamentos.js';
 import { carregarEquipamentos as carregarEquipamentosDevolucao } from './devolucao.js';
 
-// Atualiza o ícone ativo do bottom navigation
-function atualizarBottomNavActive(telaId) {
-  document.querySelectorAll('.nav-item').forEach(nav => {
-    nav.classList.remove('active');
-  });
-  const mapa = {
-    'mainScreen': 'home',
-    'searchScreen': 'search',
-    'recentesScreen': 'recentes',
-    'criticosScreen': 'criticos',
-    'equipamentosScreen': 'equipamentos',
-    'inclusaoScreen': 'inclusao',
-    'devolucaoScreen': 'devolucao'
-  };
-  const navTarget = mapa[telaId];
-  if (navTarget) {
-    const botao = document.querySelector(`.nav-item[data-nav="${navTarget}"]`);
-    if (botao) botao.classList.add('active');
-  }
-}
-
 function aplicarAdaptacaoPorPerfil() {
   const isGerente = perfilAtual === 'adm' || perfilAtual === 'gerente';
   
@@ -115,11 +94,6 @@ export function atualizarNavegacao() {
     });
   });
   
-  const bottomNav = document.querySelector('.bottom-nav');
-  if (bottomNav && perfilAtual !== null) {
-    bottomNav.style.display = 'flex';
-    bottomNav.style.visibility = 'visible';
-  }
   aplicarAdaptacaoPorPerfil();
 }
 
@@ -156,17 +130,6 @@ export function mostrarTelaPrincipal() {
   const header = document.querySelector('.header');
   if (header) header.style.display = 'flex';
   
-  atualizarBottomNavActive('mainScreen');
-  const bottomNav = document.querySelector('.bottom-nav');
-  if (bottomNav) {
-    bottomNav.style.display = 'flex';
-    bottomNav.style.visibility = 'visible';
-  }
-  aplicarAdaptacaoPorPerfil();
-  carregarMetricas();
-  carregarCategoriasRapidas();
-  carregarListaCritica();
-  
   // Atualiza a navegação
   atualizarNavegacao();
 }
@@ -178,9 +141,7 @@ export async function mostrarTela(telaId) {
     if (el) el.classList.remove('active');
   });
   const telaAtiva = document.getElementById(telaId);
-  if (telaAtiva) telaAtiva.classList.add('active');
-  atualizarBottomNavActive(telaId);
-  
+  if (telaAtiva) telaAtiva.classList.add('active');  
   if (telaId === 'recentesScreen') {
     const badge = document.getElementById('badge-recentes');
     if (badge) badge.style.display = 'none';

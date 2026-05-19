@@ -162,7 +162,7 @@ async function registrarRetirada(data) {
         itemNome, 
         patrimonioStr, 
         tecnico, 
-        observacao,     // ← ordem corrigida: observacao ANTES de destino_valor
+        observacao,
         destino_valor
       );
     }
@@ -638,7 +638,7 @@ async function registrarDevolucao(data) {
   for (let i = 1; i < rows.length; i++) {
     if (rows[i][1] === itemNome) {
       linhaItem = i + 1;
-      categoria = rows[i][0] || '';          // ← obtém a categoria
+      categoria = rows[i][0] || '';
       quantidadeAtual = Number(rows[i][3]) || 0;
       novaQuantidade = quantidadeAtual + quantidade;
       await sheets.spreadsheets.values.update({
@@ -655,7 +655,7 @@ async function registrarDevolucao(data) {
     console.warn(`Item "${itemNome}" não encontrado na planilha CVS. Estoque não atualizado.`);
   }
 
-  // 3. Registrar no log de inclusões (agora com categoria preenchida)
+  // 3. Registrar no log de inclusões
   const timestamp = new Date().toLocaleString('pt-BR', { timeZone: 'America/Sao_Paulo' });
   await sheets.spreadsheets.values.append({
     spreadsheetId: SPREADSHEET_ID,
@@ -762,7 +762,7 @@ async function registrarDevolucaoMultipla(data) {
           linhaItem = i + 1;
           categoria = rows[i][0] || '';
           const quantidadeAtual = Number(rows[i][3]) || 0;
-          const novaQuantidade = quantidadeAtual + 1; // sempre 1 unidade por equipamento
+          const novaQuantidade = quantidadeAtual + 1;
           await sheets.spreadsheets.values.update({
             spreadsheetId: SPREADSHEET_ID,
             range: `CVS!D${linhaItem}`,

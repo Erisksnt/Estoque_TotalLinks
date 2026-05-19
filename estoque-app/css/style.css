@@ -944,6 +944,7 @@
   }
 
   .search-results, .recentes-list, .criticos-list {
+    margin-top: 10px;
     padding: 0 20px 20px;
   }
 

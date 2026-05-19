@@ -41,7 +41,7 @@ export function initMenu() {
   // Configurar eventos de clique para todos os itens (sem filtrar por display)
   const sideItems = document.querySelectorAll('.side-item');
   sideItems.forEach(item => {
-    // Remove eventos antigos para evitar duplicação (clonagem não é necessária)
+    // Remove eventos antigos para evitar duplicação
     item.removeEventListener('click', item._listener);
     const listener = async (e) => {
       const tela = item.dataset.nav;

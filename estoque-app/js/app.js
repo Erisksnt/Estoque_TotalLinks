@@ -44,7 +44,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     await carregarEstoque();
     mostrarTelaPrincipal();
   } else {
-    // Mostra a tela de login (já escondida pelo CSS)
+    // Mostra a tela de login
     mostrarTela('loginScreen');
   }
 
