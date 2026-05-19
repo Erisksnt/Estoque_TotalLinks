@@ -799,6 +799,45 @@ async function registrarDevolucaoMultipla(data) {
   return { success: true, devolvidos };
 }
 
+// Busca todas as solicitações de compra
+async function getSolicitacoesCompra() {
+  const sheets = await getSheet();
+  const sheetName = 'SOLICITACOES_COMPRA';
+  try {
+    const res = await sheets.spreadsheets.values.get({
+      spreadsheetId: SPREADSHEET_ID,
+      range: sheetName
+    });
+    const rows = res.data.values || [];
+    if (rows.length <= 1) return { success: true, data: [] };
+    const solicitacoes = rows.slice(1).map((row, idx) => ({
+      linhaIndex: idx + 2,
+      timestamp: row[0],
+      tecnico: row[1],
+      itens: row[2],
+      observacao: row[3],
+      status: row[4] || 'Pendente'
+    }));
+    return { success: true, data: solicitacoes };
+  } catch (err) {
+    console.error('Erro ao buscar solicitações:', err);
+    return { success: false, error: err.message };
+  }
+}
+
+// Atualiza o status de uma solicitação
+async function atualizarStatusSolicitacao(data) {
+  const { linhaId, status } = data;
+  const sheets = await getSheet();
+  await sheets.spreadsheets.values.update({
+    spreadsheetId: SPREADSHEET_ID,
+    range: `SOLICITACOES_COMPRA!E${linhaId}`,
+    valueInputOption: 'RAW',
+    resource: { values: [[status]] }
+  });
+  return { success: true, message: 'Status atualizado' };
+}
+
 module.exports = {
   getEstoque,
   registrarRetirada,
@@ -811,5 +850,7 @@ module.exports = {
   getEquipamentosComTecnico,
   registrarDevolucao,
   registrarDevolucaoMultipla,
-  registrarSolicitacao
+  registrarSolicitacao,
+  getSolicitacoesCompra,
+  atualizarStatusSolicitacao
 };

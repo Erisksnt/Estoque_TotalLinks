@@ -11,7 +11,9 @@ const {
   getEquipamentosComTecnico,
   registrarDevolucao,
   registrarSolicitacao,
-  registrarDevolucaoMultipla
+  registrarDevolucaoMultipla,
+  getSolicitacoesCompra,
+  atualizarStatusSolicitacao
 } = require('./sheets.js');
 
 module.exports = async function handler(req, res) {
@@ -54,6 +56,14 @@ module.exports = async function handler(req, res) {
         const { tecnico } = req.query;
         if (!tecnico) return res.status(400).json({ success: false, error: 'Técnico não informado' });
         result = await getEquipamentosComTecnico(tecnico);
+      } else if (action === 'getSolicitacoesCompra') {
+        result = await getSolicitacoesCompra();
+      } else if (action === 'atualizarStatusSolicitacao') {
+        const { linhaId, status } = req.query;
+        if (!linhaId || !status) {
+          return res.status(400).json({ success: false, error: 'Parâmetros não informados' });
+        }
+        result = await atualizarStatusSolicitacao({ linhaId, status });
       } else if (action === 'obterBadge') {
         if (!nome) {
           return res.status(400).json({ success: false, error: 'Nome não fornecido' });
@@ -87,6 +97,8 @@ module.exports = async function handler(req, res) {
         result = await registrarSolicitacao(data);
       } else if (data.action === 'registrarDevolucaoMultipla') {
         result = await registrarDevolucaoMultipla(data);
+      } else if (data.action === 'atualizarStatusSolicitacao') {
+        result = await atualizarStatusSolicitacao(data);
       } else if (data.action === 'atualizarVisualizacao') {
         const { nome, contadorGlobal } = data;
         if (!nome) {

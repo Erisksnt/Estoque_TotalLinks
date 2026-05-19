@@ -1060,11 +1060,6 @@
     display: none !important;
   }
 
-  /* Garantir que o bottom navigation fique sempre visível */
-  .bottom-nav {
-    z-index: 100;
-  }
-
   /* Ajuste para o card de sincronização em modo técnico */
   body.tecnico .sync-card {
     margin-top: 20px;
@@ -1084,4 +1079,65 @@
     #selectEquipamentoDevolucao {
       font-size: 14px;
     }
+  }
+
+  /* ============================================
+      SOLICITAÇÕES DE COMPRA
+    ============================================ */
+  .solicitacoes-list {
+    margin-top: 20px;
+  }
+  .solicitacao-item {
+    background: white;
+    border: 1px solid #E2E8F0;
+    border-radius: 12px;
+    padding: 16px;
+    margin-bottom: 12px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+  .solicitacao-info {
+    flex: 1;
+  }
+  .solicitacao-itens {
+    font-size: 13px;
+    color: #2D3748;
+    margin-top: 6px;
+  }
+  .solicitacao-obs {
+    font-size: 12px;
+    color: #718096;
+    margin-top: 4px;
+  }
+  .solicitacao-status {
+    margin-top: 8px;
+  }
+  .status-badge {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 600;
+  }
+  .status-badge.pendente {
+    background: #FEE2E2;
+    color: #DC2626;
+  }
+  .status-badge.atendida {
+    background: #D1FAE5;
+    color: #059669;
+  }
+  .btn-marcar-atendida {
+    background: #0f4c81;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 13px;
+  }
+  .btn-marcar-atendida:hover {
+    background: #0f4c81;
   }

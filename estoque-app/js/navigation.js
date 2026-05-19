@@ -108,6 +108,7 @@ export function mostrarTelaPrincipal() {
   const inclusaoScreen = document.getElementById('inclusaoScreen');
   const devolucaoScreen = document.getElementById('devolucaoScreen');
   const solicitacaoScreen = document.getElementById('solicitacaoScreen');
+  const solicitacoesScreen = document.getElementById('solicitacoesScreen');
   const equipamentosScreen = document.getElementById('equipamentosScreen');
   if (mainScreen) mainScreen.classList.add('active');
   if (loginScreen) loginScreen.classList.remove('active');
@@ -135,7 +136,7 @@ export function mostrarTelaPrincipal() {
 }
 
 export async function mostrarTela(telaId) {
-  const telas = ['mainScreen', 'loginScreen', 'itemsScreen', 'withdrawScreen', 'searchScreen', 'recentesScreen', 'criticosScreen', 'inclusaoScreen', 'devolucaoScreen', 'solicitacaoScreen', 'equipamentosScreen'];
+  const telas = ['mainScreen', 'loginScreen', 'itemsScreen', 'withdrawScreen', 'searchScreen', 'recentesScreen', 'criticosScreen', 'inclusaoScreen', 'devolucaoScreen', 'solicitacaoScreen', 'solicitacoesScreen', 'equipamentosScreen'];
   telas.forEach(tela => {
     const el = document.getElementById(tela);
     if (el) el.classList.remove('active');

@@ -100,6 +100,7 @@
         <div class="side-item" data-nav="devolucao">Devolver Equipamento</div>
         <div class="side-item" data-nav="recentes">Movimentações Recentes<span id="menuBadgeRecentes" class="badge-menu" style="display: none;">0</span></div>
         <div class="side-item" data-nav="solicitacao">Solicitar Compra</div>
+        <div class="side-item" data-nav="solicitacoes">Solicitações de Compra</div>
         <div class="side-item" data-nav="criticos">Itens Críticos</div>
         <div class="side-item" data-nav="logout">Sair</div>
       </div>
@@ -285,6 +286,21 @@
         <div class="form-buttons">
           <button id="btnEnviarSolicitacao" class="btn-confirm">Enviar Solicitação</button>
         </div>
+      </div>
+    </div>
+
+    <!-- Tela de Gerenciamento de Solicitações de Compra (apenas admin) -->
+    <div id="solicitacoesScreen" class="screen">
+      <div class="form-container">
+        <div class="solicitacoes-filtro">
+          <label>Filtrar por status:</label>
+          <select id="filtroStatusSolicitacoes" class="input">
+            <option value="todas">Todas</option>
+            <option value="Pendente">Pendente</option>
+            <option value="Atendida">Atendida</option>
+          </select>
+        </div>
+        <div id="solicitacoesList" class="solicitacoes-list"></div>
       </div>
     </div>
 

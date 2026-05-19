@@ -7,10 +7,15 @@ import { setTecnicoAtual, perfilAtual } from './state.js';
 
 export function atualizarVisibilidadeMenu() {
   const isAdmin = perfilAtual === 'adm' || perfilAtual === 'gerente';
+  const itemSolicitar = document.querySelector('.side-item[data-nav="solicitacao"]');
+  const itemSolicitacoes = document.querySelector('.side-item[data-nav="solicitacoes"]');
   const itemCriticos = document.querySelector('.side-item[data-nav="criticos"]');
-  if (itemCriticos) {
-    itemCriticos.style.display = isAdmin ? 'flex' : 'none';
-  }
+  const itemEquipamentos = document.querySelector('.side-item[data-nav="equipamentos"]');
+
+  if (itemSolicitar) itemSolicitar.style.display = !isAdmin ? 'flex' : 'none';
+  if (itemSolicitacoes) itemSolicitacoes.style.display = isAdmin ? 'flex' : 'none';
+  if (itemCriticos) itemCriticos.style.display = isAdmin ? 'flex' : 'none';
+  if (itemEquipamentos) itemEquipamentos.style.display = isAdmin ? 'flex' : 'none';
 }
 
 export function initMenu() {
@@ -72,6 +77,9 @@ export function initMenu() {
         case 'solicitacao':
           mostrarTela('solicitacaoScreen');
           break;
+        case 'solicitacoes':
+          mostrarTela('solicitacoesScreen');
+          break;
         case 'logout':
           setTecnicoAtual(null);
           const badge = document.getElementById('badge-recentes');
@@ -83,6 +91,6 @@ export function initMenu() {
       closeMenu();
     };
     item.addEventListener('click', listener);
-    item._listener = listener; // guarda referência para remoção futura
+    item._listener = listener;
   });
 }

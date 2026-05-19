@@ -13,6 +13,7 @@ import { initEquipamentos } from './equipamentos.js';
 import { initMenu } from './menu.js';
 import { initDevolucao } from './devolucao.js';
 import { initSolicitacao } from './solicitacao.js';
+import { initSolicitacoes } from './solicitacoes.js';
 
 // Exporta funções globais para os onclick do HTML
 window.abrirCategoria = abrirCategoria;
@@ -34,6 +35,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   initMenu();
   initDevolucao();
   initSolicitacao();
+  initSolicitacoes();
 
   // Verifica se há um técnico logado na sessão
   if (tecnicoAtual) {
