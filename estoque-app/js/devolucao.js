@@ -3,7 +3,7 @@ import { mostrarTela } from './navigation.js';
 import { tecnicoAtual, atualizarBadgeGlobal } from './state.js';
 import { API_URL } from './config.js';
 
-let equipamentoSelecionado = null; // (não usado mais, mas mantido)
+let equipamentoSelecionado = null;
 
 export async function carregarEquipamentos() {
   const select = document.getElementById('selectEquipamentoDevolucao');

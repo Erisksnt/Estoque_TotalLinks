@@ -2,7 +2,7 @@
 const { getTecnicos } = require('./sheets.js');
 
 export default async function handler(req, res) {
-  // Lista de origens permitidas (produção + desenvolvimento local)
+  // Lista de origens permitidas
   const allowedOrigins = [
     'https://totallinks-estoque.vercel.app',
     'http://localhost:3000',
